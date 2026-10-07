@@ -1,1402 +1,4945 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
 
-<title>ZOMBİ AVI - Multiplayer</title>
+<title>Zombi Avı Online</title>
 
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<link rel="canonical" href="https://zombiavi.github.io/oyun-site/?utm_source=chatgpt.com">
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #080b0f;
-    font-family: Arial, sans-serif;
-    touch-action: none;
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#080b10;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    touch-action:none;
 }
 
-canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background: #10151a;
+button,
+input{
+    font-family:inherit;
 }
 
-#menu {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =====================================================
+   ANA MENÜ
+===================================================== */
+
+#menu{
+    position:fixed;
+    inset:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+
     background:
-        radial-gradient(circle at center, #18231b 0%, #07090b 70%);
-    color: white;
+        radial-gradient(
+            circle at top,
+            #17212c 0,
+            #080b10 55%
+        );
+
+    z-index:50;
+
+    padding:25px;
 }
 
-.panel {
-    width: min(420px, 92vw);
-    padding: 25px;
-    border-radius: 18px;
-    background: rgba(15, 20, 24, .96);
-    border: 1px solid #34413a;
-    box-shadow: 0 20px 60px rgba(0,0,0,.55);
-    text-align: center;
+.menu-container{
+    width:min(1100px,100%);
+    margin:auto;
 }
 
-.panel h1 {
-    margin: 0 0 8px;
-    font-size: 34px;
-    color: #71e36c;
+.logo{
+    text-align:center;
+
+    font-size:
+        clamp(34px,6vw,64px);
+
+    font-weight:900;
+
+    color:#ff4757;
+
+    text-shadow:
+        0 5px 25px
+        rgba(255,71,87,.25);
+
+    margin:15px 0 5px;
 }
 
-.panel p {
-    color: #b8c1c5;
-    font-size: 14px;
+.subtitle{
+    text-align:center;
+
+    color:#9ba7b4;
+
+    margin-bottom:18px;
 }
 
-input,
-button {
-    width: 100%;
-    border: 0;
-    border-radius: 12px;
-    padding: 14px;
-    margin-top: 10px;
-    font-size: 16px;
+
+/* =====================================================
+   TOPLAM JETON
+===================================================== */
+
+.total-coins{
+    width:max-content;
+    max-width:100%;
+
+    margin:0 auto 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #27200b,
+            #17140b
+        );
+
+    border:
+        1px solid
+        rgba(255,212,59,.35);
+
+    border-radius:16px;
+
+    padding:
+        12px 22px;
+
+    color:#ffd43b;
+
+    font-size:22px;
+
+    font-weight:900;
+
+    box-shadow:
+        0 8px 30px
+        rgba(255,212,59,.08);
 }
 
-input {
-    background: #20282d;
-    color: white;
-    outline: none;
+.total-coins span{
+    color:#fff;
 }
 
-button {
-    background: #4caf50;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.menu-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
 }
 
-button:active {
-    transform: scale(.97);
+.panel{
+    background:
+        rgba(20,26,34,.94);
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.35);
 }
 
-.secondary {
-    background: #303940;
+.panel h2{
+    margin-bottom:15px;
+
+    font-size:21px;
 }
 
-#roomInfo {
-    display: none;
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    background: #11171b;
-    color: #c9d0d4;
-    font-size: 13px;
+
+/* =====================================================
+   PROFİL
+===================================================== */
+
+.profile{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    background:#10161e;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    margin-bottom:14px;
 }
 
-#roomCode {
-    color: #70e86b;
-    font-weight: bold;
-    font-size: 22px;
-    letter-spacing: 3px;
+.profile-name{
+    font-size:20px;
+    font-weight:bold;
 }
 
-#status {
-    margin-top: 12px;
-    color: #f2c94c;
-    font-size: 13px;
+.coin-box{
+    color:#ffd43b;
+
+    font-weight:bold;
+
+    font-size:20px;
 }
 
-#hud {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 5;
-    color: white;
-    pointer-events: none;
-    user-select: none;
+input{
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:
+        1px solid
+        #354353;
+
+    outline:none;
+
+    background:#0c1118;
+
+    color:white;
+
+    font-size:16px;
+
+    margin-bottom:10px;
 }
 
-.hudBox {
-    background: rgba(0,0,0,.55);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 10px;
-    padding: 10px 13px;
-    min-width: 170px;
+input:focus{
+    border-color:#ff4757;
 }
 
-#healthBar {
-    width: 150px;
-    height: 12px;
-    background: #333;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 5px;
+.btn{
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#ff4757;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:800;
+
+    margin-top:8px;
+
+    transition:.15s;
 }
 
-#healthFill {
-    width: 100%;
-    height: 100%;
-    background: #50d45a;
+.btn:hover{
+    filter:brightness(1.1);
+
+    transform:
+        translateY(-1px);
 }
 
-#mobileControls {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    pointer-events: none;
+.btn.green{
+    background:#20bf6b;
 }
 
-#joystick {
-    position: absolute;
-    left: 25px;
-    bottom: 28px;
-    width: 145px;
-    height: 145px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.09);
-    border: 2px solid rgba(255,255,255,.18);
-    pointer-events: auto;
+.btn.blue{
+    background:#3867d6;
 }
 
-#stick {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 65px;
-    height: 65px;
-    margin-left: -32.5px;
-    margin-top: -32.5px;
-    border-radius: 50%;
-    background: rgba(105,220,105,.75);
-    border: 2px solid rgba(255,255,255,.4);
+.btn.dark{
+    background:#293442;
 }
 
-#fireButton {
-    position: absolute;
-    right: 30px;
-    bottom: 40px;
-    width: 105px;
-    height: 105px;
-    border-radius: 50%;
-    background: rgba(220,60,55,.78);
-    border: 3px solid rgba(255,255,255,.35);
-    color: white;
-    font-weight: bold;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-    user-select: none;
+.btn.gold{
+    background:#e6a900;
+
+    color:#111;
 }
 
-#aimArea {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 55%;
-    height: 100%;
-    pointer-events: auto;
+.btn:disabled{
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
 }
 
-#disconnect {
-    position: fixed;
-    right: 12px;
-    top: 12px;
-    z-index: 6;
-    width: auto;
-    padding: 8px 12px;
-    margin: 0;
-    display: none;
-    background: rgba(180,50,50,.85);
-    font-size: 12px;
+.small-status{
+    color:#9ba7b4;
+
+    font-size:13px;
+
+    min-height:20px;
+
+    margin-top:8px;
 }
 
-@media (pointer: coarse) {
-    #mobileControls {
-        display: block;
+
+/* =====================================================
+   ARKADAŞ
+===================================================== */
+
+.friend-search{
+    display:flex;
+
+    gap:8px;
+}
+
+.friend-search input{
+    margin:0;
+}
+
+.friend-search button{
+    width:130px;
+
+    flex-shrink:0;
+}
+
+.search-result,
+.friend-item,
+.request-item{
+    background:#10161e;
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:13px;
+
+    padding:12px;
+
+    margin-top:10px;
+}
+
+.friend-row{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+}
+
+.friend-name{
+    font-weight:bold;
+}
+
+.online-dot{
+    display:inline-block;
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:#20bf6b;
+
+    margin-right:5px;
+}
+
+.friend-action{
+    padding:9px 12px;
+
+    border-radius:9px;
+
+    background:#3867d6;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.request-actions{
+    display:flex;
+
+    gap:7px;
+
+    margin-top:9px;
+}
+
+.request-actions button{
+    flex:1;
+
+    padding:9px;
+
+    border-radius:9px;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.accept{
+    background:#20bf6b;
+}
+
+.reject{
+    background:#eb3b5a;
+}
+
+
+/* =====================================================
+   DÜKKAN
+===================================================== */
+
+.shop-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:10px;
+}
+
+.shop-item{
+    background:#10161e;
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:15px;
+
+    padding:14px;
+
+    min-height:160px;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.weapon-icon{
+    font-size:42px;
+
+    margin-bottom:8px;
+}
+
+.shop-item h3{
+    margin-bottom:5px;
+}
+
+.shop-item p{
+    color:#9ba7b4;
+
+    font-size:13px;
+
+    flex:1;
+}
+
+.price{
+    color:#ffd43b;
+
+    font-weight:bold;
+
+    margin:9px 0;
+}
+
+
+/* =====================================================
+   LOBİ
+===================================================== */
+
+.lobby{
+    margin-top:15px;
+
+    background:#0d131b;
+
+    border:
+        1px solid
+        #344251;
+
+    border-radius:15px;
+
+    padding:15px;
+}
+
+.lobby-title{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+}
+
+.lobby-player{
+    background:#18212b;
+
+    padding:10px 12px;
+
+    border-radius:10px;
+
+    margin-top:7px;
+
+    display:flex;
+
+    justify-content:space-between;
+}
+
+.host-badge{
+    color:#ffd43b;
+
+    font-size:12px;
+}
+
+
+/* =====================================================
+   OYUN
+===================================================== */
+
+#game{
+    position:fixed;
+
+    inset:0;
+
+    background:#111820;
+
+    z-index:10;
+}
+
+#canvas{
+    display:block;
+
+    width:100%;
+    height:100%;
+}
+
+#hud{
+    position:fixed;
+
+    left:15px;
+    top:15px;
+
+    z-index:20;
+
+    pointer-events:none;
+}
+
+.hud-box{
+    background:
+        rgba(10,14,19,.82);
+
+    border:
+        1px solid
+        #344251;
+
+    border-radius:12px;
+
+    padding:10px 13px;
+
+    margin-bottom:8px;
+
+    min-width:180px;
+}
+
+.hp-bar{
+    width:160px;
+
+    height:12px;
+
+    background:#303943;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    margin-top:5px;
+}
+
+#hpFill{
+    width:100%;
+
+    height:100%;
+
+    background:#20bf6b;
+}
+
+
+/* =====================================================
+   ENVANTER
+===================================================== */
+
+#inventory{
+    position:fixed;
+
+    left:50%;
+
+    bottom:18px;
+
+    transform:
+        translateX(-50%);
+
+    z-index:25;
+
+    display:flex;
+
+    gap:8px;
+
+    background:
+        rgba(8,11,15,.9);
+
+    border:
+        1px solid
+        #394654;
+
+    border-radius:15px;
+
+    padding:8px;
+}
+
+.weapon-slot{
+    width:75px;
+    height:65px;
+
+    border:
+        2px solid
+        #344251;
+
+    background:#141c25;
+
+    border-radius:11px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#b8c2cc;
+
+    font-size:11px;
+}
+
+.weapon-slot.active{
+    border-color:#ffd43b;
+
+    color:white;
+
+    box-shadow:
+        0 0 12px
+        rgba(255,212,59,.2);
+}
+
+.weapon-slot .icon{
+    font-size:23px;
+}
+
+
+/* =====================================================
+   GAME MESSAGE
+===================================================== */
+
+#gameMessage{
+    position:fixed;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    z-index:40;
+
+    text-align:center;
+
+    background:
+        rgba(8,11,15,.94);
+
+    border:
+        1px solid
+        #3a4654;
+
+    border-radius:18px;
+
+    padding:30px;
+
+    min-width:280px;
+}
+
+#gameMessage h2{
+    margin-bottom:10px;
+
+    font-size:30px;
+}
+
+#gameMessage p{
+    color:#9ba7b4;
+
+    margin-bottom:18px;
+}
+
+
+/* =====================================================
+   MOBİL KONTROLLER
+===================================================== */
+
+#mobileControls{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:30;
+
+    pointer-events:none;
+}
+
+.mobile-console{
+    position:absolute;
+
+    width:155px;
+    height:155px;
+
+    border-radius:50%;
+
+    pointer-events:auto;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+}
+
+#moveConsole{
+    left:18px;
+
+    bottom:25px;
+}
+
+#aimConsole{
+    right:18px;
+
+    bottom:25px;
+}
+
+.console-ring{
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    background:
+        rgba(20,28,38,.68);
+
+    border:
+        2px solid
+        rgba(255,255,255,.2);
+
+    box-shadow:
+        inset 0 0 0 12px
+        rgba(255,255,255,.035),
+
+        0 8px 25px
+        rgba(0,0,0,.35);
+}
+
+.console-ring::before{
+    content:"";
+
+    position:absolute;
+
+    inset:25px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,.16);
+
+    border-radius:50%;
+}
+
+.joystick{
+    position:absolute;
+
+    width:65px;
+    height:65px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.18);
+
+    border:
+        2px solid
+        rgba(255,255,255,.3);
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,.35);
+}
+
+.console-label{
+    position:absolute;
+
+    width:100%;
+
+    text-align:center;
+
+    top:-25px;
+
+    color:
+        rgba(255,255,255,.75);
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+}
+
+
+/* =====================================================
+   NİŞANGAH
+===================================================== */
+
+#aimReticle{
+    width:54px;
+    height:54px;
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    pointer-events:none;
+}
+
+.cross-h{
+    position:absolute;
+
+    left:0;
+    right:0;
+
+    top:50%;
+
+    height:2px;
+
+    background:#ff4757;
+
+    transform:
+        translateY(-50%);
+}
+
+.cross-v{
+    position:absolute;
+
+    top:0;
+    bottom:0;
+
+    left:50%;
+
+    width:2px;
+
+    background:#ff4757;
+
+    transform:
+        translateX(-50%);
+}
+
+.cross-circle{
+    position:absolute;
+
+    inset:14px;
+
+    border:
+        2px solid
+        #ff4757;
+
+    border-radius:50%;
+}
+
+.cross-dot{
+    position:absolute;
+
+    width:5px;
+    height:5px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    background:#ff4757;
+
+    border-radius:50%;
+}
+
+
+/* =====================================================
+   MOBİL
+===================================================== */
+
+@media(max-width:800px){
+
+    .menu-grid{
+        grid-template-columns:1fr;
     }
+
 }
 
-@media (max-width: 600px) {
-    .panel h1 {
-        font-size: 28px;
+@media(max-width:700px){
+
+    #mobileControls{
+        display:block;
     }
 
-    .panel {
-        padding: 20px;
+    #inventory{
+        bottom:190px;
+
+        max-width:95%;
+
+        overflow-x:auto;
     }
+
+    .weapon-slot{
+        width:64px;
+
+        min-width:64px;
+
+        height:58px;
+    }
+
+    #hud{
+        left:8px;
+
+        top:8px;
+    }
+
+    .hud-box{
+        min-width:150px;
+
+        padding:8px 10px;
+    }
+
+    .hp-bar{
+        width:130px;
+    }
+
+    #menu{
+        padding:12px;
+    }
+
+    .panel{
+        padding:15px;
+    }
+
+    .friend-search{
+        display:block;
+    }
+
+    .friend-search button{
+        width:100%;
+
+        margin-top:7px;
+    }
+
+    .shop-grid{
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .shop-item{
+        min-height:145px;
+
+        padding:11px;
+    }
+
 }
+
 </style>
 </head>
 
 <body>
 
-<canvas id="game"></canvas>
+
+<!-- =====================================================
+     ANA MENÜ
+===================================================== -->
 
 <div id="menu">
-    <div class="panel">
 
-        <h1>🧟 ZOMBİ AVI</h1>
+<div class="menu-container">
 
-        <p>
-            İki oyunculu online zombi oyunu.<br>
-            Bir kişi oda oluşturur, diğer kişi oda koduyla katılır.
+    <div class="logo">
+        🧟 ZOMBİ AVI
+    </div>
+
+    <div class="subtitle">
+        Arkadaşlarınla veya tek başına zombilere karşı savaş!
+    </div>
+
+
+    <!-- TOPLAM JETON -->
+
+    <div class="total-coins">
+        🪙 Toplam Jeton:
+        <span id="topCoinDisplay">
+            0
+        </span>
+    </div>
+
+
+    <div class="menu-grid">
+
+
+        <!-- =================================================
+             SOL TARAF
+        ================================================== -->
+
+        <div>
+
+
+            <!-- PROFİL -->
+
+            <div class="panel">
+
+                <h2>
+                    👤 Profil
+                </h2>
+
+                <div id="profileArea">
+
+                    <input
+                        id="nameInput"
+                        maxlength="20"
+                        placeholder="Oyundaki kullanıcı adın">
+
+                    <button
+                        class="btn"
+                        id="onlineBtn">
+                        ONLINE OL
+                    </button>
+
+                    <div
+                        id="onlineStatus"
+                        class="small-status">
+
+                        Önce kullanıcı adını belirle.
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="profileInfo"
+                    class="hidden">
+
+                    <div class="profile">
+
+                        <div>
+
+                            <div
+                                class="profile-name"
+                                id="myNameDisplay">
+                            </div>
+
+                            <div class="small-status">
+
+                                🟢 Çevrimiçi
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="coin-box">
+
+                            🪙
+                            <span
+                                id="coinDisplay">
+                                0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="btn green"
+                        id="soloBtn">
+
+                        ▶ TEK BAŞINA OYNA
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ARKADAŞLAR -->
+
+            <div
+                class="panel"
+                style="margin-top:20px;">
+
+                <h2>
+                    👥 Arkadaşlarım
+                </h2>
+
+
+                <div class="friend-search">
+
+                    <input
+                        id="friendInput"
+                        placeholder="Arkadaş kullanıcı adını yaz">
+
+                    <button
+                        class="btn blue"
+                        id="searchFriendBtn">
+
+                        ARA
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="searchResult">
+                </div>
+
+
+                <div
+                    id="friendRequests">
+                </div>
+
+
+                <div
+                    id="friendsList">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SAĞ TARAF
+        ================================================== -->
+
+        <div>
+
+
+            <!-- ODA -->
+
+            <div
+                class="panel"
+                id="lobbyPanel">
+
+                <h2>
+                    🎮 Odan
+                </h2>
+
+
+                <div
+                    id="lobbyEmpty"
+                    class="small-status">
+
+                    Henüz bir oyun daveti yok.
+
+                </div>
+
+
+                <div
+                    id="lobby"
+                    class="lobby hidden">
+
+
+                    <div class="lobby-title">
+
+                        <strong>
+                            👥 Odadakiler
+                        </strong>
+
+                        <span
+                            id="lobbyStatus"
+                            class="small-status">
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="lobbyPlayers">
+                    </div>
+
+
+                    <button
+                        id="startLobbyBtn"
+                        class="btn green"
+                        disabled>
+
+                        ▶ BAŞLAT
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- DÜKKAN -->
+
+            <div
+                class="panel"
+                style="margin-top:20px;">
+
+                <h2>
+                    🔫 Silah Dükkanı
+                </h2>
+
+                <div
+                    class="small-status"
+                    style="margin-bottom:12px;">
+
+                    Jetonlarını kullanarak
+                    silah ve bomba satın al.
+
+                </div>
+
+
+                <div class="shop-grid">
+
+
+                    <!-- TABANCA -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Tabanca
+                        </h3>
+
+                        <p>
+                            Başlangıç silahın.
+                            Dengeli hasar ve hız.
+                        </p>
+
+                        <div class="price">
+                            ÜCRETSİZ
+                        </div>
+
+                        <button
+                            class="btn dark"
+                            disabled>
+
+                            SAHİPSİN
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- HAFİF -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Hafif Taramalı
+                        </h3>
+
+                        <p>
+                            Daha hızlı ateş eder.
+                            Hasarı düşüktür.
+                        </p>
+
+                        <div class="price">
+                            🪙 150
+                        </div>
+
+                        <button
+                            id="buySmgBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- NORMAL -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Normal Taramalı
+                        </h3>
+
+                        <p>
+                            Güçlü ve hızlı ateş eden
+                            otomatik silah.
+                        </p>
+
+                        <div class="price">
+                            🪙 350
+                        </div>
+
+                        <button
+                            id="buyAutoBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- BOMBA -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            💣
+                        </div>
+
+                        <h3>
+                            Bomba
+                        </h3>
+
+                        <p>
+                            Zombilere alan hasarı verir.
+                        </p>
+
+                        <div class="price">
+                            🪙 450
+                        </div>
+
+                        <button
+                            id="buyBombBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="shopStatus"
+                    class="small-status">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+
+
+<!-- =====================================================
+     OYUN
+===================================================== -->
+
+<div
+    id="game"
+    class="hidden">
+
+    <canvas id="canvas"></canvas>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hud-box">
+
+            ❤️ CAN:
+            <span id="hpText">
+                100
+            </span>
+
+            <div class="hp-bar">
+
+                <div
+                    id="hpFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🧟 ÖLDÜRME:
+            <span id="scoreText">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🔫:
+            <span id="weaponText">
+                Tabanca
+            </span>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🪙:
+            <span id="gameCoinText">
+                0
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ENVANTER -->
+
+    <div id="inventory">
+
+
+        <div
+            class="weapon-slot active"
+            data-weapon="pistol">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Tabanca
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="smg">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Hafif
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="auto">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Taramalı
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="bomb">
+
+            <div class="icon">
+                💣
+            </div>
+
+            <div>
+                Bomba
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MOBİL KONTROLLER -->
+
+    <div id="mobileControls">
+
+
+        <!-- HAREKET -->
+
+        <div
+            id="moveConsole"
+            class="mobile-console">
+
+            <div class="console-label">
+                HAREKET
+            </div>
+
+            <div class="console-ring">
+            </div>
+
+            <div
+                id="moveStick"
+                class="joystick">
+            </div>
+
+        </div>
+
+
+        <!-- NİŞAN -->
+
+        <div
+            id="aimConsole"
+            class="mobile-console">
+
+            <div class="console-label">
+                NİŞAN / ATEŞ
+            </div>
+
+            <div class="console-ring">
+            </div>
+
+
+            <div id="aimReticle">
+
+                <div class="cross-h">
+                </div>
+
+                <div class="cross-v">
+                </div>
+
+                <div class="cross-circle">
+                </div>
+
+                <div class="cross-dot">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- OYUN BİTTİ -->
+
+    <div
+        id="gameMessage"
+        class="hidden">
+
+        <h2
+            id="messageTitle">
+            OYUN BİTTİ
+        </h2>
+
+        <p
+            id="messageText">
         </p>
 
-        <input id="nameInput"
-               maxlength="12"
-               placeholder="Oyuncu adın">
+        <button
+            id="backMenuBtn"
+            class="btn">
 
-        <button id="createBtn">
-            ODA OLUŞTUR
+            ANA MENÜ
+
         </button>
 
-        <div id="roomInfo">
-            Oda kodun:
-            <div id="roomCode">------</div>
-            <small>Bu kodu arkadaşına gönder.</small>
-        </div>
-
-        <input id="joinInput"
-               maxlength="10"
-               placeholder="Oda kodu">
-
-        <button id="joinBtn" class="secondary">
-            ODAYA KATIL
-        </button>
-
-        <div id="status">
-            Bağlantı bekleniyor...
-        </div>
-
-    </div>
-</div>
-
-<div id="hud">
-    <div class="hudBox">
-        ❤️ Can:
-        <span id="healthText">100</span>
-
-        <div id="healthBar">
-            <div id="healthFill"></div>
-        </div>
-
-        <div style="margin-top:5px">
-            🧟 Zombi:
-            <span id="zombieText">0</span>
-        </div>
-    </div>
-</div>
-
-<button id="disconnect">
-    ÇIKIŞ
-</button>
-
-<div id="mobileControls">
-
-    <div id="aimArea"></div>
-
-    <div id="joystick">
-        <div id="stick"></div>
-    </div>
-
-    <div id="fireButton">
-        🔫 ATEŞ
     </div>
 
 </div>
+
+
 
 <script>
-"use strict";
 
-/* =========================================================
-   CANVAS
-========================================================= */
+/* =====================================================
+   KAYIT SİSTEMİ
+===================================================== */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+/*
+   Yeni oyuncular artık 0 jetonla başlıyor.
+*/
 
-let W = window.innerWidth;
-let H = window.innerHeight;
+const SAVE_KEY =
+    "zombi_avi_player_v4";
 
-function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+
+let saveData =
+    JSON.parse(
+        localStorage.getItem(
+            SAVE_KEY
+        ) || "null"
+    );
+
+
+if(!saveData){
+
+    saveData = {
+
+        coins:0,
+
+        inventory:{
+
+            pistol:true,
+
+            smg:false,
+
+            auto:false,
+
+            bomb:false
+
+        },
+
+        friends:[]
+
+    };
+
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+
 }
 
-window.addEventListener("resize", resize);
+
+function save(){
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+
+
+    updateCoins();
+
+    updateShop();
+
+    updateInventory();
+
+}
+
+
+/* =====================================================
+   PEER
+===================================================== */
+
+let peer = null;
+
+let myName = "";
+
+let myId = "";
+
+let connections = {};
+
+let pendingRequests = {};
+
+let lobby = {
+
+    active:false,
+
+    hostId:null,
+
+    players:{}
+
+};
+
+let gameConnection = null;
+
+let isHost = false;
+
+
+/* =====================================================
+   ELEMENTLER
+===================================================== */
+
+const nameInput =
+    document.getElementById(
+        "nameInput"
+    );
+
+const onlineBtn =
+    document.getElementById(
+        "onlineBtn"
+    );
+
+const onlineStatus =
+    document.getElementById(
+        "onlineStatus"
+    );
+
+const profileInfo =
+    document.getElementById(
+        "profileInfo"
+    );
+
+const myNameDisplay =
+    document.getElementById(
+        "myNameDisplay"
+    );
+
+const friendInput =
+    document.getElementById(
+        "friendInput"
+    );
+
+const searchFriendBtn =
+    document.getElementById(
+        "searchFriendBtn"
+    );
+
+const searchResult =
+    document.getElementById(
+        "searchResult"
+    );
+
+const friendsList =
+    document.getElementById(
+        "friendsList"
+    );
+
+const friendRequests =
+    document.getElementById(
+        "friendRequests"
+    );
+
+const lobbyBox =
+    document.getElementById(
+        "lobby"
+    );
+
+const lobbyEmpty =
+    document.getElementById(
+        "lobbyEmpty"
+    );
+
+const lobbyPlayers =
+    document.getElementById(
+        "lobbyPlayers"
+    );
+
+const lobbyStatus =
+    document.getElementById(
+        "lobbyStatus"
+    );
+
+const startLobbyBtn =
+    document.getElementById(
+        "startLobbyBtn"
+    );
+
+
+/* =====================================================
+   İSİM NORMALİZE
+===================================================== */
+
+function normalizeName(
+    name
+){
+
+    return name
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-z0-9]+/g,
+            "-"
+        )
+        .replace(
+            /^-+|-+$/g,
+            ""
+        )
+        .slice(
+            0,
+            24
+        );
+
+}
+
+
+/* =====================================================
+   DURUM
+===================================================== */
+
+function setOnlineStatus(
+    text
+){
+
+    onlineStatus.textContent =
+        text;
+
+}
+
+
+/* =====================================================
+   ONLINE OL
+===================================================== */
+
+onlineBtn.onclick =
+function(){
+
+    const name =
+        nameInput.value.trim();
+
+
+    if(
+        name.length < 2
+    ){
+
+        setOnlineStatus(
+            "En az 2 karakterlik bir kullanıcı adı yaz."
+        );
+
+        return;
+
+    }
+
+
+    myName =
+        name;
+
+    myId =
+        normalizeName(
+            name
+        );
+
+
+    if(!myId){
+
+        setOnlineStatus(
+            "Bu kullanıcı adı kullanılamıyor."
+        );
+
+        return;
+
+    }
+
+
+    if(peer){
+
+        try{
+
+            peer.destroy();
+
+        }catch(e){}
+
+    }
+
+
+    setOnlineStatus(
+        "Sunucuya bağlanılıyor..."
+    );
+
+
+    peer =
+        new Peer(
+            myId,
+            {
+                debug:0
+            }
+        );
+
+
+    peer.on(
+        "open",
+        function(id){
+
+            myId =
+                id;
+
+
+            myNameDisplay.textContent =
+                myName;
+
+
+            profileInfo.classList.remove(
+                "hidden"
+            );
+
+
+            nameInput.disabled =
+                true;
+
+
+            onlineBtn.disabled =
+                true;
+
+
+            setOnlineStatus(
+                "🟢 Çevrimiçi"
+            );
+
+
+            renderFriends();
+
+            renderRequests();
+
+        }
+    );
+
+
+    peer.on(
+        "connection",
+        function(conn){
+
+            setupConnection(
+                conn
+            );
+
+        }
+    );
+
+
+    peer.on(
+        "error",
+        function(err){
+
+            console.log(err);
+
+
+            if(
+                err.type ===
+                "unavailable-id"
+            ){
+
+                setOnlineStatus(
+                    "❌ Bu kullanıcı adı şu anda kullanımda."
+                );
+
+            }else{
+
+                setOnlineStatus(
+                    "❌ Bağlantı hatası: " +
+                    err.type
+                );
+
+            }
+
+
+            nameInput.disabled =
+                false;
+
+
+            onlineBtn.disabled =
+                false;
+
+        }
+    );
+
+};
+
+
+/* =====================================================
+   BAĞLANTI
+===================================================== */
+
+function setupConnection(
+    conn
+){
+
+    if(
+        connections[
+            conn.peer
+        ]
+    ){
+
+        try{
+
+            connections[
+                conn.peer
+            ].close();
+
+        }catch(e){}
+
+    }
+
+
+    connections[
+        conn.peer
+    ] =
+        conn;
+
+
+    conn.on(
+        "open",
+        function(){
+
+            console.log(
+                "Bağlantı açıldı:",
+                conn.peer
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "data",
+        function(data){
+
+            handleNetworkData(
+                conn,
+                data
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "close",
+        function(){
+
+            delete connections[
+                conn.peer
+            ];
+
+
+            removeLobbyPlayer(
+                conn.peer
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "error",
+        function(err){
+
+            console.log(
+                "Bağlantı hatası:",
+                err
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   GÖNDER
+===================================================== */
+
+function sendTo(
+    conn,
+    data
+){
+
+    if(
+        conn &&
+        conn.open
+    ){
+
+        try{
+
+            conn.send(
+                data
+            );
+
+        }catch(e){
+
+            console.log(e);
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   ARKADAŞ ARAMA
+===================================================== */
+
+/*
+   ÖNEMLİ:
+   Artık burada direkt isim gösterilmiyor.
+
+   Önce gerçekten PeerJS bağlantısı deneniyor.
+   Bağlantı açılırsa oyuncu online kabul ediliyor.
+*/
+
+searchFriendBtn.onclick =
+function(){
+
+    const name =
+        friendInput.value.trim();
+
+
+    if(!name){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                Bir kullanıcı adı yaz.
+            </div>`;
+
+        return;
+
+    }
+
+
+    if(!peer){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                ❌ Önce ONLINE OL.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const id =
+        normalizeName(
+            name
+        );
+
+
+    if(
+        id === myId
+    ){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                ❌ Kendini arkadaş olarak ekleyemezsin.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const already =
+        saveData.friends.some(
+            function(f){
+
+                return f.id === id;
+
+            }
+        );
+
+
+    if(already){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                👥
+                <b>
+                    ${escapeHTML(name)}
+                </b>
+
+                zaten arkadaşların arasında.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    searchResult.innerHTML =
+        `<div class="search-result">
+
+            🔎
+            <b>
+                ${escapeHTML(name)}
+            </b>
+            aranıyor...
+
+        </div>`;
+
+
+    let found = false;
+
+
+    const conn =
+        peer.connect(
+            id,
+            {
+                reliable:true
+            }
+        );
+
+
+    setupConnection(
+        conn
+    );
+
+
+    const timeout =
+        setTimeout(
+            function(){
+
+                if(!found){
+
+                    try{
+
+                        conn.close();
+
+                    }catch(e){}
+
+
+                    searchResult.innerHTML =
+                        `<div class="search-result">
+
+                            ❌
+                            <b>
+                                ${escapeHTML(name)}
+                            </b>
+
+                            bulunamadı veya çevrimdışı.
+
+                        </div>`;
+
+                }
+
+            },
+            5000
+        );
+
+
+    conn.on(
+        "open",
+        function(){
+
+            found =
+                true;
+
+
+            clearTimeout(
+                timeout
+            );
+
+
+            /*
+               Burada artık gerçekten
+               online olduğu kesin.
+            */
+
+            searchResult.innerHTML =
+                `<div class="search-result">
+
+                    <div class="friend-row">
+
+                        <div>
+
+                            <span
+                                class="online-dot">
+                            </span>
+
+                            <span
+                                class="friend-name">
+
+                                ${escapeHTML(name)}
+
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="friend-action"
+                            id="sendRequestButton">
+
+                            İSTEK GÖNDER
+
+                        </button>
+
+                    </div>
+
+                    <div class="small-status">
+
+                        🟢 Şu anda çevrimiçi.
+
+                    </div>
+
+                </div>`;
+
+
+            document
+                .getElementById(
+                    "sendRequestButton"
+                )
+                .onclick =
+                function(){
+
+                    sendTo(
+                        conn,
+                        {
+
+                            type:
+                                "friendRequest",
+
+                            fromName:
+                                myName,
+
+                            fromId:
+                                myId
+
+                        }
+                    );
+
+
+                    searchResult.innerHTML =
+                        `<div class="search-result">
+
+                            📨
+                            <b>
+                                ${escapeHTML(name)}
+                            </b>
+
+                            arkadaşlık isteği gönderildi.
+
+                        </div>`;
+
+                };
+
+        }
+    );
+
+};
+
+
+/* =====================================================
+   NETWORK VERİ
+===================================================== */
+
+function handleNetworkData(
+    conn,
+    data
+){
+
+    if(
+        !data ||
+        !data.type
+    )
+        return;
+
+
+    /* ARKADAŞ İSTEĞİ */
+
+    if(
+        data.type ===
+        "friendRequest"
+    ){
+
+        pendingRequests[
+            data.fromId
+        ] = {
+
+            id:
+                data.fromId,
+
+            name:
+                data.fromName,
+
+            conn:
+                conn
+
+        };
+
+
+        renderRequests();
+
+        return;
+
+    }
+
+
+    /* KABUL */
+
+    if(
+        data.type ===
+        "friendAccepted"
+    ){
+
+        addFriend(
+            data.fromName,
+            data.fromId
+        );
+
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                ✅
+                <b>
+                    ${escapeHTML(
+                        data.fromName
+                    )}
+                </b>
+
+                arkadaşlık isteğini kabul etti.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    /* RED */
+
+    if(
+        data.type ===
+        "friendRejected"
+    ){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                ❌
+                ${escapeHTML(
+                    data.fromName
+                )}
+                isteği reddetti.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    /* DAVET */
+
+    if(
+        data.type ===
+        "gameInvite"
+    ){
+
+        receiveGameInvite(
+            conn,
+            data
+        );
+
+        return;
+
+    }
+
+
+    /* DAVET KABUL */
+
+    if(
+        data.type ===
+        "inviteAccepted"
+    ){
+
+        createLobby(
+            conn,
+            data.fromName,
+            true
+        );
+
+        return;
+
+    }
+
+
+    /* LOBİ */
+
+    if(
+        data.type ===
+        "lobbyInfo"
+    ){
+
+        lobby.active =
+            true;
+
+
+        lobby.hostId =
+            data.hostId;
+
+
+        lobby.players =
+            data.players || {};
+
+
+        gameConnection =
+            conn;
+
+
+        isHost =
+            myId ===
+            lobby.hostId;
+
+
+        renderLobby();
+
+        return;
+
+    }
+
+
+    /* OYUN BAŞLANGICI */
+
+    if(
+        data.type ===
+        "gameStart"
+    ){
+
+        gameConnection =
+            conn;
+
+
+        isHost =
+            false;
+
+
+        startGame(
+            false
+        );
+
+        return;
+
+    }
+
+
+    /* INPUT */
+
+    if(
+        data.type ===
+        "input"
+    ){
+
+        if(isHost){
+
+            remoteInput =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* ATEŞ */
+
+    if(
+        data.type ===
+        "shoot"
+    ){
+
+        if(isHost){
+
+            remoteShoot =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* BOMBA */
+
+    if(
+        data.type ===
+        "bomb"
+    ){
+
+        if(isHost){
+
+            remoteBomb =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* STATE */
+
+    if(
+        data.type ===
+        "state"
+    ){
+
+        if(!isHost){
+
+            remote.x =
+                data.x;
+
+            remote.y =
+                data.y;
+
+            remote.hp =
+                data.hp;
+
+            remote.name =
+                data.name;
+
+            local.hp =
+                data.localHp;
+
+            score =
+                data.score;
+
+        }
+
+        return;
+
+    }
+
+}
+
+
+/* =====================================================
+   ARKADAŞ KABUL
+===================================================== */
+
+function acceptRequest(
+    id
+){
+
+    const req =
+        pendingRequests[
+            id
+        ];
+
+
+    if(!req)
+        return;
+
+
+    addFriend(
+        req.name,
+        req.id
+    );
+
+
+    sendTo(
+        req.conn,
+        {
+
+            type:
+                "friendAccepted",
+
+            fromName:
+                myName,
+
+            fromId:
+                myId
+
+        }
+    );
+
+
+    delete pendingRequests[
+        id
+    ];
+
+
+    renderRequests();
+
+    renderFriends();
+
+}
+
+
+/* =====================================================
+   RED
+===================================================== */
+
+function rejectRequest(
+    id
+){
+
+    const req =
+        pendingRequests[
+            id
+        ];
+
+
+    if(!req)
+        return;
+
+
+    sendTo(
+        req.conn,
+        {
+
+            type:
+                "friendRejected",
+
+            fromName:
+                myName
+
+        }
+    );
+
+
+    try{
+
+        req.conn.close();
+
+    }catch(e){}
+
+
+    delete pendingRequests[
+        id
+    ];
+
+
+    renderRequests();
+
+}
+
+
+/* =====================================================
+   ARKADAŞ EKLE
+===================================================== */
+
+function addFriend(
+    name,
+    id
+){
+
+    if(
+        saveData.friends.some(
+            function(f){
+
+                return f.id === id;
+
+            }
+        )
+    ){
+
+        return;
+
+    }
+
+
+    saveData.friends.push({
+
+        name:
+            name,
+
+        id:
+            id
+
+    });
+
+
+    save();
+
+    renderFriends();
+
+}
+
+
+/* =====================================================
+   ARKADAŞ LİSTESİ
+===================================================== */
+
+function renderFriends(){
+
+    friendsList.innerHTML =
+        "";
+
+
+    if(
+        saveData.friends.length === 0
+    ){
+
+        friendsList.innerHTML =
+            `<div
+                class="small-status"
+                style="margin-top:12px;">
+
+                Henüz arkadaşın yok.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    saveData.friends.forEach(
+        function(friend){
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "friend-item";
+
+
+            div.innerHTML = `
+
+                <div class="friend-row">
+
+                    <div>
+
+                        👤
+
+                        <span
+                            class="friend-name">
+
+                            ${escapeHTML(
+                                friend.name
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="friend-action">
+
+                        DAVET ET
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            div
+                .querySelector(
+                    "button"
+                )
+                .onclick =
+                function(){
+
+                    inviteFriend(
+                        friend
+                    );
+
+                };
+
+
+            friendsList.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   İSTEKLER
+===================================================== */
+
+function renderRequests(){
+
+    friendRequests.innerHTML =
+        "";
+
+
+    const ids =
+        Object.keys(
+            pendingRequests
+        );
+
+
+    if(
+        ids.length === 0
+    ){
+
+        return;
+
+    }
+
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+
+    title.className =
+        "small-status";
+
+
+    title.style.marginTop =
+        "15px";
+
+
+    title.textContent =
+        "📨 Gelen Arkadaşlık İstekleri";
+
+
+    friendRequests.appendChild(
+        title
+    );
+
+
+    ids.forEach(
+        function(id){
+
+            const req =
+                pendingRequests[
+                    id
+                ];
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "request-item";
+
+
+            div.innerHTML = `
+
+                <div>
+
+                    👤
+
+                    <b>
+                        ${escapeHTML(
+                            req.name
+                        )}
+                    </b>
+
+                    sana arkadaşlık isteği gönderdi.
+
+                </div>
+
+
+                <div class="request-actions">
+
+                    <button
+                        class="accept">
+
+                        KABUL ET
+
+                    </button>
+
+
+                    <button
+                        class="reject">
+
+                        REDDET
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            div
+                .querySelector(
+                    ".accept"
+                )
+                .onclick =
+                function(){
+
+                    acceptRequest(
+                        id
+                    );
+
+                };
+
+
+            div
+                .querySelector(
+                    ".reject"
+                )
+                .onclick =
+                function(){
+
+                    rejectRequest(
+                        id
+                    );
+
+                };
+
+
+            friendRequests.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DAVET GÖNDER
+===================================================== */
+
+function inviteFriend(
+    friend
+){
+
+    if(!peer){
+
+        alert(
+            "Önce ONLINE OL."
+        );
+
+        return;
+
+    }
+
+
+    let conn =
+        connections[
+            friend.id
+        ];
+
+
+    if(!conn){
+
+        conn =
+            peer.connect(
+                friend.id,
+                {
+                    reliable:true
+                }
+            );
+
+
+        setupConnection(
+            conn
+        );
+
+    }
+
+
+    const sendInvite =
+        function(){
+
+            sendTo(
+                conn,
+                {
+
+                    type:
+                        "gameInvite",
+
+                    fromId:
+                        myId,
+
+                    fromName:
+                        myName
+
+                }
+            );
+
+
+            createLobby(
+                conn,
+                friend.name,
+                true
+            );
+
+        };
+
+
+    if(
+        conn.open
+    ){
+
+        sendInvite();
+
+    }else{
+
+        conn.on(
+            "open",
+            sendInvite
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DAVET AL
+===================================================== */
+
+function receiveGameInvite(
+    conn,
+    data
+){
+
+    const answer =
+        confirm(
+            data.fromName +
+            " seni oyununa davet ediyor.\n\n" +
+            "Kabul etmek istiyor musun?"
+        );
+
+
+    if(answer){
+
+        sendTo(
+            conn,
+            {
+
+                type:
+                    "inviteAccepted",
+
+                fromName:
+                    myName,
+
+                fromId:
+                    myId
+
+            }
+        );
+
+
+        gameConnection =
+            conn;
+
+
+        createLobby(
+            conn,
+            data.fromName,
+            false
+        );
+
+    }else{
+
+        sendTo(
+            conn,
+            {
+
+                type:
+                    "inviteRejected",
+
+                fromName:
+                    myName
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ
+===================================================== */
+
+function createLobby(
+    conn,
+    friendName,
+    host
+){
+
+    lobby.active =
+        true;
+
+
+    lobby.hostId =
+        host
+        ?
+        myId
+        :
+        conn.peer;
+
+
+    lobby.players =
+        {};
+
+
+    lobby.players[
+        myId
+    ] = {
+
+        id:
+            myId,
+
+        name:
+            myName
+
+    };
+
+
+    lobby.players[
+        conn.peer
+    ] = {
+
+        id:
+            conn.peer,
+
+        name:
+            friendName
+
+    };
+
+
+    gameConnection =
+        conn;
+
+
+    isHost =
+        host;
+
+
+    renderLobby();
+
+
+    if(isHost){
+
+        broadcastLobby();
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ GÖSTER
+===================================================== */
+
+function renderLobby(){
+
+    lobbyEmpty.classList.add(
+        "hidden"
+    );
+
+
+    lobbyBox.classList.remove(
+        "hidden"
+    );
+
+
+    lobbyPlayers.innerHTML =
+        "";
+
+
+    Object.values(
+        lobby.players
+    )
+    .forEach(
+        function(player){
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "lobby-player";
+
+
+            div.innerHTML = `
+
+                <span>
+
+                    👤
+                    ${escapeHTML(
+                        player.name
+                    )}
+
+                </span>
+
+
+                ${
+                    player.id ===
+                    lobby.hostId
+
+                    ?
+
+                    `<span
+                        class="host-badge">
+
+                        👑 ODA SAHİBİ
+
+                    </span>`
+
+                    :
+
+                    ""
+
+                }
+
+            `;
+
+
+            lobbyPlayers.appendChild(
+                div
+            );
+
+        }
+    );
+
+
+    if(isHost){
+
+        lobbyStatus.textContent =
+            "Hazır";
+
+
+        startLobbyBtn.disabled =
+            false;
+
+    }else{
+
+        lobbyStatus.textContent =
+            "Oda sahibinin başlatması bekleniyor.";
+
+
+        startLobbyBtn.disabled =
+            true;
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ YAY
+===================================================== */
+
+function broadcastLobby(){
+
+    if(!isHost)
+        return;
+
+
+    sendTo(
+        gameConnection,
+        {
+
+            type:
+                "lobbyInfo",
+
+            hostId:
+                lobby.hostId,
+
+            players:
+                lobby.players
+
+        }
+    );
+
+
+    renderLobby();
+
+}
+
+
+/* =====================================================
+   LOBİ BAŞLAT
+===================================================== */
+
+startLobbyBtn.onclick =
+function(){
+
+    if(!isHost)
+        return;
+
+
+    sendTo(
+        gameConnection,
+        {
+
+            type:
+                "gameStart"
+
+        }
+    );
+
+
+    startGame(
+        true
+    );
+
+};
+
+
+/* =====================================================
+   TEK OYUNCU
+===================================================== */
+
+document
+    .getElementById(
+        "soloBtn"
+    )
+    .onclick =
+    function(){
+
+        gameConnection =
+            null;
+
+
+        isHost =
+            true;
+
+
+        lobby.active =
+            false;
+
+
+        startGame(
+            true
+        );
+
+    };
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+const game =
+    document.getElementById(
+        "game"
+    );
+
+
+const canvas =
+    document.getElementById(
+        "canvas"
+    );
+
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+
+let started =
+    false;
+
+
+let gameOver =
+    false;
+
+
+let score =
+    0;
+
+
+let zombies =
+    [];
+
+
+let bullets =
+    [];
+
+
+let particles =
+    [];
+
+
+let lastTime =
+    0;
+
+
+let zombieTimer =
+    0;
+
+
+let coinRewardTimer =
+    0;
+
+
+/* =====================================================
+   OYUNCULAR
+===================================================== */
+
+let local = {
+
+    x:300,
+
+    y:300,
+
+    hp:100
+
+};
+
+
+let remote = {
+
+    x:-100,
+
+    y:-100,
+
+    hp:100,
+
+    name:"Arkadaş"
+
+};
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+let keys =
+    {};
+
+let mouse = {
+
+    x:0,
+
+    y:0,
+
+    down:false
+
+};
+
+
+let aimAngle =
+    0;
+
+
+let aimActive =
+    false;
+
+
+let moveX =
+    0;
+
+
+let moveY =
+    0;
+
+
+/* =====================================================
+   REMOTE
+===================================================== */
+
+let remoteInput = {
+
+    x:0,
+
+    y:0
+
+};
+
+
+let remoteShoot =
+    null;
+
+
+let remoteBomb =
+    null;
+
+
+/* =====================================================
+   SİLAHLAR
+===================================================== */
+
+const weapons = {
+
+    pistol:{
+
+        name:
+            "Tabanca",
+
+        damage:
+            28,
+
+        fireRate:
+            380,
+
+        speed:
+            9,
+
+        spread:
+            .025,
+
+        pellets:
+            1
+
+    },
+
+
+    smg:{
+
+        name:
+            "Hafif Taramalı",
+
+        damage:
+            12,
+
+        fireRate:
+            100,
+
+        speed:
+            10,
+
+        spread:
+            .09,
+
+        pellets:
+            1
+
+    },
+
+
+    auto:{
+
+        name:
+            "Normal Taramalı",
+
+        damage:
+            20,
+
+        fireRate:
+            145,
+
+        speed:
+            11,
+
+        spread:
+            .055,
+
+        pellets:
+            1
+
+    },
+
+
+    bomb:{
+
+        name:
+            "Bomba",
+
+        damage:
+            85,
+
+        fireRate:
+            900,
+
+        speed:
+            6,
+
+        spread:
+            0,
+
+        pellets:
+            1
+
+    }
+
+};
+
+
+let currentWeapon =
+    "pistol";
+
+
+let lastShot =
+    0;
+
+
+let bombs =
+    0;
+
+
+/* =====================================================
+   ZOMBİ TEMAS SÜRESİ
+===================================================== */
+
+let lastZombieDamage =
+    0;
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+function resize(){
+
+    canvas.width =
+        window.innerWidth;
+
+
+    canvas.height =
+        window.innerHeight;
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
 resize();
 
 
-/* =========================================================
-   UI
-========================================================= */
+/* =====================================================
+   OYUN BAŞLAT
+===================================================== */
 
-const menu = document.getElementById("menu");
-const createBtn = document.getElementById("createBtn");
-const joinBtn = document.getElementById("joinBtn");
-const nameInput = document.getElementById("nameInput");
-const joinInput = document.getElementById("joinInput");
-const roomInfo = document.getElementById("roomInfo");
-const roomCode = document.getElementById("roomCode");
-const statusText = document.getElementById("status");
-const disconnectBtn = document.getElementById("disconnect");
+function startGame(
+    host
+){
 
-const healthText = document.getElementById("healthText");
-const healthFill = document.getElementById("healthFill");
-const zombieText = document.getElementById("zombieText");
+    isHost =
+        host;
 
 
-/* =========================================================
-   PEER / MULTIPLAYER
-========================================================= */
+    started =
+        true;
 
-let peer = null;
-let connection = null;
 
-let isHost = false;
-let connected = false;
+    gameOver =
+        false;
 
-let myId = null;
-let playerName = "Oyuncu";
 
-let roomSeed = null;
+    score =
+        0;
 
 
-/* =========================================================
-   GAME
-========================================================= */
+    zombies =
+        [];
 
-const WORLD_W = 2400;
-const WORLD_H = 1600;
 
-let running = false;
+    bullets =
+        [];
 
-let players = {};
 
-let zombies = [];
-let bullets = [];
+    particles =
+        [];
 
-let lastTime = performance.now();
-let spawnTimer = 0;
-let zombieIdCounter = 1;
 
-let camera = {
-    x: 0,
-    y: 0
-};
+    zombieTimer =
+        0;
 
 
-/* =========================================================
-   PLAYER
-========================================================= */
+    lastZombieDamage =
+        0;
 
-function createPlayer(id, name, x, y) {
 
-    return {
-        id,
-        name,
+    local.x =
+        canvas.width / 2;
 
-        x,
-        y,
 
-        radius: 20,
+    local.y =
+        canvas.height / 2;
 
-        speed: 230,
 
-        health: 100,
-        maxHealth: 100,
+    local.hp =
+        100;
 
-        angle: 0,
 
-        shootCooldown: 0,
+    remote.x =
+        canvas.width / 2 +
+        100;
 
-        alive: true,
 
-        color:
-            id === myId
-                ? "#55d96a"
-                : "#4da6ff"
-    };
-}
+    remote.y =
+        canvas.height / 2;
 
 
-/* =========================================================
-   INPUT
-========================================================= */
+    remote.hp =
+        100;
 
-const keys = {};
 
-window.addEventListener("keydown", e => {
+    document
+        .getElementById(
+            "menu"
+        )
+        .classList.add(
+            "hidden"
+        );
 
-    keys[e.key.toLowerCase()] = true;
 
-    if (
-        [
-            "arrowup",
-            "arrowdown",
-            "arrowleft",
-            "arrowright",
-            " "
-        ].includes(e.key.toLowerCase())
-    ) {
-        e.preventDefault();
-    }
-
-});
-
-window.addEventListener("keyup", e => {
-    keys[e.key.toLowerCase()] = false;
-});
-
-
-let mouse = {
-    x: W / 2,
-    y: H / 2,
-    down: false
-};
-
-canvas.addEventListener("mousemove", e => {
-
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-
-});
-
-canvas.addEventListener("mousedown", e => {
-
-    if (e.button === 0) {
-        mouse.down = true;
-    }
-
-});
-
-window.addEventListener("mouseup", e => {
-
-    if (e.button === 0) {
-        mouse.down = false;
-    }
-
-});
-
-
-/* =========================================================
-   MOBILE JOYSTICK
-========================================================= */
-
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
-const fireButton = document.getElementById("fireButton");
-const aimArea = document.getElementById("aimArea");
-
-let joystickActive = false;
-
-let joyX = 0;
-let joyY = 0;
-
-let firePressed = false;
-
-function updateJoystick(clientX, clientY) {
-
-    const rect = joystick.getBoundingClientRect();
-
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    let dx = clientX - centerX;
-    let dy = clientY - centerY;
-
-    const max = rect.width * 0.31;
-
-    const distance = Math.hypot(dx, dy);
-
-    if (distance > max) {
-
-        dx = dx / distance * max;
-        dy = dy / distance * max;
-
-    }
-
-    joyX = dx / max;
-    joyY = dy / max;
-
-    stick.style.transform =
-        `translate(${dx}px, ${dy}px)`;
-}
-
-function resetJoystick() {
-
-    joystickActive = false;
-
-    joyX = 0;
-    joyY = 0;
-
-    stick.style.transform =
-        "translate(0px, 0px)";
-}
-
-
-joystick.addEventListener("pointerdown", e => {
-
-    joystickActive = true;
-
-    joystick.setPointerCapture(e.pointerId);
-
-    updateJoystick(
-        e.clientX,
-        e.clientY
+    game.classList.remove(
+        "hidden"
     );
 
-});
 
-joystick.addEventListener("pointermove", e => {
+    document
+        .getElementById(
+            "gameMessage"
+        )
+        .classList.add(
+            "hidden"
+        );
 
-    if (!joystickActive) return;
 
-    updateJoystick(
-        e.clientX,
-        e.clientY
+    updateHUD();
+
+    updateInventory();
+
+
+    if(isHost){
+
+        for(
+            let i=0;
+            i<3;
+            i++
+        ){
+
+            spawnZombie();
+
+        }
+
+    }
+
+
+    lastTime =
+        performance.now();
+
+
+    requestAnimationFrame(
+        loop
     );
 
-});
-
-joystick.addEventListener("pointerup", resetJoystick);
-joystick.addEventListener("pointercancel", resetJoystick);
-
-
-/* =========================================================
-   MOBILE AIM
-========================================================= */
-
-aimArea.addEventListener("pointermove", e => {
-
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-
-});
-
-aimArea.addEventListener("pointerdown", e => {
-
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-
-});
-
-
-/* =========================================================
-   MOBILE FIRE
-========================================================= */
-
-fireButton.addEventListener("pointerdown", e => {
-
-    e.preventDefault();
-
-    firePressed = true;
-
-    fireButton.setPointerCapture(e.pointerId);
-
-});
-
-fireButton.addEventListener("pointerup", e => {
-
-    e.preventDefault();
-
-    firePressed = false;
-
-});
-
-fireButton.addEventListener("pointercancel", () => {
-    firePressed = false;
-});
-
-
-/* =========================================================
-   CONNECTION
-========================================================= */
-
-function setStatus(text) {
-    statusText.textContent = text;
 }
 
 
-function randomRoomCode() {
-
-    const chars =
-        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-    let result = "";
-
-    for (let i = 0; i < 6; i++) {
-
-        result +=
-            chars[Math.floor(Math.random() * chars.length)];
-
-    }
-
-    return result;
-}
-
-
-/* =========================================================
-   CREATE ROOM
-========================================================= */
-
-createBtn.addEventListener("click", () => {
-
-    playerName =
-        nameInput.value.trim() || "Oyuncu 1";
-
-    isHost = true;
-
-    roomSeed = randomRoomCode();
-
-    setStatus("Oda oluşturuluyor...");
-
-    peer = new Peer(
-        "zombi-avi-" + roomSeed,
-        {
-            debug: 1
-        }
-    );
-
-    peer.on("open", id => {
-
-        myId = id;
-
-        roomCode.textContent = roomSeed;
-
-        roomInfo.style.display = "block";
-
-        setStatus(
-            "Arkadaşının odaya katılmasını bekliyoruz..."
-        );
-
-        startHostGame();
-
-    });
-
-    peer.on("connection", conn => {
-
-        if (connection) {
-
-            conn.close();
-
-            return;
-
-        }
-
-        connection = conn;
-
-        setupConnection();
-
-    });
-
-    peer.on("error", err => {
-
-        console.error(err);
-
-        setStatus(
-            "Bağlantı hatası: " + err.type
-        );
-
-    });
-
-});
-
-
-/* =========================================================
-   JOIN ROOM
-========================================================= */
-
-joinBtn.addEventListener("click", () => {
-
-    const code =
-        joinInput.value
-            .trim()
-            .toUpperCase();
-
-    if (!code) {
-
-        setStatus("Oda kodunu gir.");
-
-        return;
-
-    }
-
-    playerName =
-        nameInput.value.trim() || "Oyuncu 2";
-
-    isHost = false;
-
-    setStatus("Odaya bağlanılıyor...");
-
-    peer = new Peer({
-        debug: 1
-    });
-
-    peer.on("open", id => {
-
-        myId = id;
-
-        connection =
-            peer.connect(
-                "zombi-avi-" + code,
-                {
-                    reliable: true
-                }
-            );
-
-        setupConnection();
-
-    });
-
-    peer.on("error", err => {
-
-        console.error(err);
-
-        setStatus(
-            "Bağlantı hatası: " + err.type
-        );
-
-    });
-
-});
-
-
-/* =========================================================
-   CONNECTION SETUP
-========================================================= */
-
-function setupConnection() {
-
-    if (!connection) return;
-
-    connection.on("open", () => {
-
-        connected = true;
-
-        setStatus("Bağlantı kuruldu!");
-
-        disconnectBtn.style.display = "block";
-
-        if (!isHost) {
-
-            connection.send({
-                type: "join",
-                id: myId,
-                name: playerName
-            });
-
-        } else {
-
-            connection.send({
-                type: "hostInfo",
-                players: Object.values(players)
-            });
-
-        }
-
-    });
-
-
-    connection.on("data", data => {
-
-        handleNetworkData(data);
-
-    });
-
-
-    connection.on("close", () => {
-
-        connected = false;
-
-        setStatus(
-            "Diğer oyuncunun bağlantısı kesildi."
-        );
-
-    });
-
-
-    connection.on("error", err => {
-
-        console.error(err);
-
-    });
-
-}
-
-
-/* =========================================================
-   HOST GAME
-========================================================= */
-
-function startHostGame() {
-
-    const p =
-        createPlayer(
-            myId,
-            playerName,
-            600,
-            800
-        );
-
-    players[myId] = p;
-
-    running = true;
-
-    menu.style.display = "none";
-
-    spawnInitialZombies();
-
-    requestAnimationFrame(gameLoop);
-
-}
-
-
-/* =========================================================
-   CLIENT GAME
-========================================================= */
-
-function startClientGame(hostPlayers) {
-
-    players = {};
-
-    hostPlayers.forEach(p => {
-
-        players[p.id] = p;
-
-    });
-
-    if (!players[myId]) {
-
-        players[myId] =
-            createPlayer(
-                myId,
-                playerName,
-                900,
-                800
-            );
-
-    }
-
-    running = true;
-
-    menu.style.display = "none";
-
-    requestAnimationFrame(gameLoop);
-
-}
-
-
-/* =========================================================
-   NETWORK DATA
-========================================================= */
-
-function handleNetworkData(data) {
-
-    if (!data || !data.type) return;
-
-
-    if (data.type === "join") {
-
-        if (!isHost) return;
-
-        if (Object.keys(players).length >= 2) {
-
-            connection.send({
-                type: "full"
-            });
-
-            return;
-
-        }
-
-        players[data.id] =
-            createPlayer(
-                data.id,
-                data.name,
-                950,
-                800
-            );
-
-        connection.send({
-            type: "initial",
-            players: Object.values(players),
-            zombies
-        });
-
-        return;
-    }
-
-
-    if (data.type === "initial") {
-
-        if (isHost) return;
-
-        startClientGame(data.players);
-
-        zombies = data.zombies || [];
-
-        return;
-    }
-
-
-    if (data.type === "playerState") {
-
-        if (!players[data.id]) {
-
-            players[data.id] =
-                createPlayer(
-                    data.id,
-                    data.name || "Oyuncu",
-                    data.x,
-                    data.y
-                );
-
-        }
-
-        const p = players[data.id];
-
-        p.x = data.x;
-        p.y = data.y;
-        p.angle = data.angle;
-        p.health = data.health;
-        p.alive = data.alive;
-
-        return;
-    }
-
-
-    if (data.type === "shoot") {
-
-        if (isHost) {
-
-            hostCreateBullet(
-                data.id,
-                data.angle
-            );
-
-        }
-
-        return;
-    }
-
-
-    if (data.type === "world") {
-
-        if (isHost) return;
-
-        players = data.players || {};
-        zombies = data.zombies || [];
-
-        return;
-    }
-
-}
-
-
-/* =========================================================
-   SEND PLAYER STATE
-========================================================= */
-
-let networkTimer = 0;
-
-function sendPlayerState(dt) {
-
-    networkTimer += dt;
-
-    if (networkTimer < 0.04) return;
-
-    networkTimer = 0;
-
-    if (!connected || !connection) return;
-
-    const p = players[myId];
-
-    if (!p) return;
-
-    connection.send({
-        type: "playerState",
-
-        id: myId,
-
-        name: p.name,
-
-        x: p.x,
-        y: p.y,
-
-        angle: p.angle,
-
-        health: p.health,
-
-        alive: p.alive
-    });
-
-}
-
-
-/* =========================================================
-   SHOOT
-========================================================= */
-
-function tryShoot() {
-
-    const p = players[myId];
-
-    if (!p || !p.alive) return;
-
-    if (p.shootCooldown > 0) return;
-
-    p.shootCooldown = 0.22;
-
-    const angle =
-        Math.atan2(
-            mouse.y - (p.y - camera.y),
-            mouse.x - (p.x - camera.x)
-        );
-
-    p.angle = angle;
-
-
-    if (isHost) {
-
-        hostCreateBullet(
-            myId,
-            angle
-        );
-
-    } else if (connection) {
-
-        connection.send({
-            type: "shoot",
-            id: myId,
-            angle
-        });
-
-    }
-
-}
-
-
-/* =========================================================
-   HOST BULLET
-========================================================= */
-
-function hostCreateBullet(playerId, angle) {
-
-    const p = players[playerId];
-
-    if (!p || !p.alive) return;
-
-    bullets.push({
-
-        id:
-            Math.random()
-                .toString(36)
-                .slice(2),
-
-        owner: playerId,
-
-        x: p.x,
-        y: p.y,
-
-        vx: Math.cos(angle) * 650,
-        vy: Math.sin(angle) * 650,
-
-        life: 1.2
-    });
-
-}
-
-
-/* =========================================================
-   ZOMBIES
-========================================================= */
-
-function spawnInitialZombies() {
-
-    for (let i = 0; i < 8; i++) {
-
-        spawnZombie();
-
-    }
-
-}
-
-
-function spawnZombie() {
-
-    let x;
-    let y;
+/* =====================================================
+   ZOMBİ OLUŞTUR
+===================================================== */
+
+function spawnZombie(){
 
     const side =
-        Math.floor(Math.random() * 4);
+        Math.floor(
+            Math.random()*4
+        );
 
-    if (side === 0) {
 
-        x = Math.random() * WORLD_W;
-        y = -40;
+    let x;
 
-    } else if (side === 1) {
+    let y;
 
-        x = WORLD_W + 40;
-        y = Math.random() * WORLD_H;
 
-    } else if (side === 2) {
+    if(side === 0){
 
-        x = Math.random() * WORLD_W;
-        y = WORLD_H + 40;
+        x =
+            Math.random() *
+            canvas.width;
 
-    } else {
-
-        x = -40;
-        y = Math.random() * WORLD_H;
+        y =
+            -40;
 
     }
+
+    else if(side === 1){
+
+        x =
+            canvas.width +
+            40;
+
+        y =
+            Math.random() *
+            canvas.height;
+
+    }
+
+    else if(side === 2){
+
+        x =
+            Math.random() *
+            canvas.width;
+
+        y =
+            canvas.height +
+            40;
+
+    }
+
+    else{
+
+        x =
+            -40;
+
+        y =
+            Math.random() *
+            canvas.height;
+
+    }
+
 
     zombies.push({
 
-        id: zombieIdCounter++,
+        x:
+            x,
 
-        x,
-        y,
+        y:
+            y,
 
-        radius: 19,
+        /*
+           Öncekinden biraz daha az can.
+        */
 
-        speed: 65 + Math.random() * 25,
+        hp:
+            88,
 
-        health: 60,
+        /*
+           Biraz daha yavaş.
+        */
 
-        maxHealth: 60,
+        speed:
+            .52 +
+            Math.random()*.30,
 
-        attackCooldown: 0
+        radius:
+            17
+
     });
 
 }
 
 
-/* =========================================================
-   FIND NEAREST PLAYER
-========================================================= */
+/* =====================================================
+   MERMİ
+===================================================== */
 
-function findNearestPlayer(zombie) {
+function addBullet(
+    x,
+    y,
+    angle,
+    damage,
+    owner
+){
 
-    let target = null;
+    bullets.push({
 
-    let bestDistance = Infinity;
+        x:
+            x,
 
-    for (const id in players) {
+        y:
+            y,
 
-        const p = players[id];
+        vx:
+            Math.cos(angle)*11,
 
-        if (!p.alive) continue;
+        vy:
+            Math.sin(angle)*11,
 
-        const d =
-            Math.hypot(
-                p.x - zombie.x,
-                p.y - zombie.y
-            );
+        damage:
+            damage,
 
-        if (d < bestDistance) {
+        owner:
+            owner,
 
-            bestDistance = d;
-            target = p;
+        life:
+            80
 
-        }
+    });
 
-    }
-
-    return target;
 }
 
 
-/* =========================================================
-   UPDATE HOST
-========================================================= */
+/* =====================================================
+   ATEŞ
+===================================================== */
 
-function updateHost(dt) {
+function shoot(
+    angle,
+    owner="local"
+){
 
-    /* -------------------------
-       PLAYERS
-    ------------------------- */
-
-    for (const id in players) {
-
-        const p = players[id];
-
-        if (!p.alive) continue;
-
-        if (id === myId) {
-
-            let dx = 0;
-            let dy = 0;
+    const now =
+        performance.now();
 
 
-            if (keys["w"] || keys["arrowup"]) {
-                dy -= 1;
+    const weapon =
+        weapons[
+            currentWeapon
+        ];
+
+
+    if(
+        now-lastShot <
+        weapon.fireRate
+    ){
+
+        return;
+
+    }
+
+
+    lastShot =
+        now;
+
+
+    if(
+        currentWeapon ===
+        "bomb"
+    ){
+
+        throwBomb(
+            angle,
+            owner
+        );
+
+        return;
+
+    }
+
+
+    for(
+        let i=0;
+        i<weapon.pellets;
+        i++
+    ){
+
+        const spread =
+            (
+                Math.random()-.5
+            ) *
+            weapon.spread;
+
+
+        addBullet(
+
+            owner ===
+            "local"
+            ?
+            local.x
+            :
+            remote.x,
+
+            owner ===
+            "local"
+            ?
+            local.y
+            :
+            remote.y,
+
+            angle+
+            spread,
+
+            weapon.damage,
+
+            owner
+
+        );
+
+    }
+
+
+    if(
+        owner ===
+        "local" &&
+        gameConnection
+    ){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "shoot",
+
+                angle:
+                    angle,
+
+                weapon:
+                    currentWeapon
+
             }
+        );
 
-            if (keys["s"] || keys["arrowdown"]) {
-                dy += 1;
+    }
+
+}
+
+
+/* =====================================================
+   BOMBA
+===================================================== */
+
+function throwBomb(
+    angle,
+    owner="local"
+){
+
+    const x =
+        owner ===
+        "local"
+        ?
+        local.x
+        :
+        remote.x;
+
+
+    const y =
+        owner ===
+        "local"
+        ?
+        local.y
+        :
+        remote.y;
+
+
+    bullets.push({
+
+        x:
+            x,
+
+        y:
+            y,
+
+        vx:
+            Math.cos(angle)*6,
+
+        vy:
+            Math.sin(angle)*6,
+
+        damage:
+            85,
+
+        owner:
+            owner,
+
+        bomb:
+            true,
+
+        life:
+            55
+
+    });
+
+
+    if(
+        owner ===
+        "local" &&
+        gameConnection
+    ){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "bomb",
+
+                angle:
+                    angle
+
             }
+        );
 
-            if (keys["a"] || keys["arrowleft"]) {
-                dx -= 1;
-            }
+    }
 
-            if (keys["d"] || keys["arrowright"]) {
-                dx += 1;
-            }
+}
 
 
-            if (Math.abs(joyX) > 0.05 ||
-                Math.abs(joyY) > 0.05) {
+/* =====================================================
+   KLAVYE
+===================================================== */
 
-                dx = joyX;
-                dy = joyY;
+window.addEventListener(
+    "keydown",
+    function(e){
 
-            }
-
-
-            const length =
-                Math.hypot(dx, dy);
-
-            if (length > 0) {
-
-                dx /= length;
-                dy /= length;
-
-                p.x +=
-                    dx * p.speed * dt;
-
-                p.y +=
-                    dy * p.speed * dt;
-
-            }
+        keys[
+            e.key.toLowerCase()
+        ] = true;
 
 
-            p.x =
-                Math.max(
-                    p.radius,
-                    Math.min(
-                        WORLD_W - p.radius,
-                        p.x
-                    )
-                );
+        if(
+            e.key >= "1" &&
+            e.key <= "4"
+        ){
 
-            p.y =
-                Math.max(
-                    p.radius,
-                    Math.min(
-                        WORLD_H - p.radius,
-                        p.y
-                    )
-                );
+            const list = [
+
+                "pistol",
+
+                "smg",
+
+                "auto",
+
+                "bomb"
+
+            ];
 
 
-            if (
-                mouse.down ||
-                firePressed ||
-                keys[" "]
-            ) {
+            const index =
+                Number(
+                    e.key
+                )-1;
 
-                tryShoot();
 
-            }
+            selectWeapon(
+                list[index]
+            );
 
         }
 
+    }
+);
 
-        p.shootCooldown =
-            Math.max(
-                0,
-                p.shootCooldown - dt
+
+window.addEventListener(
+    "keyup",
+    function(e){
+
+        keys[
+            e.key.toLowerCase()
+        ] = false;
+
+    }
+);
+
+
+/* =====================================================
+   MOUSE
+===================================================== */
+
+canvas.addEventListener(
+    "mousemove",
+    function(e){
+
+        mouse.x =
+            e.clientX;
+
+
+        mouse.y =
+            e.clientY;
+
+
+        aimAngle =
+            Math.atan2(
+
+                mouse.y -
+                local.y,
+
+                mouse.x -
+                local.x
+
+            );
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousedown",
+    function(e){
+
+        if(
+            e.button === 0
+        ){
+
+            mouse.down =
+                true;
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    function(e){
+
+        if(
+            e.button === 0
+        ){
+
+            mouse.down =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBİL HAREKET
+===================================================== */
+
+const moveConsole =
+    document.getElementById(
+        "moveConsole"
+    );
+
+
+const moveStick =
+    document.getElementById(
+        "moveStick"
+    );
+
+
+const aimConsole =
+    document.getElementById(
+        "aimConsole"
+    );
+
+
+const aimReticle =
+    document.getElementById(
+        "aimReticle"
+    );
+
+
+let movePointer =
+    null;
+
+
+let aimPointer =
+    null;
+
+
+function joystickPosition(
+    event,
+    element
+){
+
+    const rect =
+        element.getBoundingClientRect();
+
+
+    let dx =
+        event.clientX -
+        (
+            rect.left +
+            rect.width/2
+        );
+
+
+    let dy =
+        event.clientY -
+        (
+            rect.top +
+            rect.height/2
+        );
+
+
+    const max =
+        rect.width/2 -
+        34;
+
+
+    const distance =
+        Math.hypot(
+            dx,
+            dy
+        );
+
+
+    if(
+        distance > max
+    ){
+
+        dx =
+            dx/distance*
+            max;
+
+
+        dy =
+            dy/distance*
+            max;
+
+    }
+
+
+    return {
+
+        dx:
+            dx,
+
+        dy:
+            dy,
+
+        nx:
+            dx/max,
+
+        ny:
+            dy/max
+
+    };
+
+}
+
+
+/* =====================================================
+   SOL JOYSTICK
+===================================================== */
+
+moveConsole.addEventListener(
+    "pointerdown",
+    function(e){
+
+        e.preventDefault();
+
+
+        movePointer =
+            e.pointerId;
+
+
+        moveConsole.setPointerCapture(
+            e.pointerId
+        );
+
+
+        updateMove(
+            e
+        );
+
+    }
+);
+
+
+moveConsole.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(
+            e.pointerId !==
+            movePointer
+        )
+            return;
+
+
+        updateMove(
+            e
+        );
+
+    }
+);
+
+
+moveConsole.addEventListener(
+    "pointerup",
+    resetMove
+);
+
+
+moveConsole.addEventListener(
+    "pointercancel",
+    resetMove
+);
+
+
+function updateMove(
+    e
+){
+
+    const p =
+        joystickPosition(
+            e,
+            moveConsole
+        );
+
+
+    moveX =
+        p.nx;
+
+
+    moveY =
+        p.ny;
+
+
+    moveStick.style.transform =
+        `translate(
+            calc(-50% + ${p.dx}px),
+            calc(-50% + ${p.dy}px)
+        )`;
+
+}
+
+
+function resetMove(){
+
+    movePointer =
+        null;
+
+
+    moveX =
+        0;
+
+
+    moveY =
+        0;
+
+
+    moveStick.style.transform =
+        "translate(-50%,-50%)";
+
+}
+
+
+/* =====================================================
+   SAĞ NİŞAN
+===================================================== */
+
+aimConsole.addEventListener(
+    "pointerdown",
+    function(e){
+
+        e.preventDefault();
+
+
+        aimPointer =
+            e.pointerId;
+
+
+        aimConsole.setPointerCapture(
+            e.pointerId
+        );
+
+
+        aimActive =
+            true;
+
+
+        updateAim(
+            e
+        );
+
+    }
+);
+
+
+aimConsole.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(
+            e.pointerId !==
+            aimPointer
+        )
+            return;
+
+
+        updateAim(
+            e
+        );
+
+    }
+);
+
+
+aimConsole.addEventListener(
+    "pointerup",
+    resetAim
+);
+
+
+aimConsole.addEventListener(
+    "pointercancel",
+    resetAim
+);
+
+
+function updateAim(
+    e
+){
+
+    const p =
+        joystickPosition(
+            e,
+            aimConsole
+        );
+
+
+    if(
+        Math.hypot(
+            p.nx,
+            p.ny
+        ) > .12
+    ){
+
+        aimAngle =
+            Math.atan2(
+                p.ny,
+                p.nx
             );
 
     }
 
 
-    /* -------------------------
-       ZOMBIES
-    ------------------------- */
+    aimReticle.style.transform =
+        `translate(
+            calc(-50% + ${p.dx}px),
+            calc(-50% + ${p.dy}px)
+        )`;
 
-    spawnTimer += dt;
+}
 
-    if (
-        spawnTimer > 2 &&
-        zombies.length < 35
-    ) {
 
-        spawnTimer = 0;
+function resetAim(){
 
-        spawnZombie();
+    aimPointer =
+        null;
+
+
+    aimActive =
+        false;
+
+
+    aimReticle.style.transform =
+        "translate(-50%,-50%)";
+
+}
+
+
+/* =====================================================
+   OYUN GÜNCELLE
+===================================================== */
+
+function update(
+    dt
+){
+
+    if(gameOver)
+        return;
+
+
+    let mx =
+        0;
+
+
+    let my =
+        0;
+
+
+    if(
+        keys["w"] ||
+        keys["arrowup"]
+    )
+        my -= 1;
+
+
+    if(
+        keys["s"] ||
+        keys["arrowdown"]
+    )
+        my += 1;
+
+
+    if(
+        keys["a"] ||
+        keys["arrowleft"]
+    )
+        mx -= 1;
+
+
+    if(
+        keys["d"] ||
+        keys["arrowright"]
+    )
+        mx += 1;
+
+
+    if(
+        Math.abs(moveX) > .05 ||
+        Math.abs(moveY) > .05
+    ){
+
+        mx =
+            moveX;
+
+
+        my =
+            moveY;
 
     }
 
 
-    for (let i = zombies.length - 1; i >= 0; i--) {
+    const len =
+        Math.hypot(
+            mx,
+            my
+        );
 
-        const z = zombies[i];
 
-        const target =
-            findNearestPlayer(z);
+    if(
+        len > 0
+    ){
 
-        if (target) {
+        mx /=
+            len;
 
-            const dx =
-                target.x - z.x;
 
-            const dy =
-                target.y - z.y;
+        my /=
+            len;
 
-            const distance =
-                Math.hypot(dx, dy);
 
-            if (distance > 42) {
+        local.x +=
+            mx*3.2;
 
-                z.x +=
-                    dx / distance *
-                    z.speed *
-                    dt;
 
-                z.y +=
-                    dy / distance *
-                    z.speed *
-                    dt;
+        local.y +=
+            my*3.2;
 
-            } else {
+    }
 
-                z.attackCooldown -= dt;
 
-                if (z.attackCooldown <= 0) {
+    local.x =
+        Math.max(
+            20,
+            Math.min(
+                canvas.width-20,
+                local.x
+            )
+        );
 
-                    z.attackCooldown = 0.7;
 
-                    target.health -= 10;
+    local.y =
+        Math.max(
+            20,
+            Math.min(
+                canvas.height-20,
+                local.y
+            )
+        );
 
-                    if (target.health <= 0) {
 
-                        target.health = 0;
-                        target.alive = false;
+    /* ATEŞ */
 
-                    }
+    if(
+        mouse.down ||
+        aimActive
+    ){
+
+        shoot(
+            aimAngle,
+            "local"
+        );
+
+    }
+
+
+    /* HOST */
+
+    if(isHost){
+
+        zombieTimer +=
+            dt;
+
+
+        if(
+            zombieTimer >
+            1400
+        ){
+
+            zombieTimer =
+                0;
+
+
+            spawnZombie();
+
+        }
+
+
+        updateZombies();
+
+    }
+
+
+    updateBullets();
+
+    updateParticles();
+
+
+    if(
+        gameConnection
+    ){
+
+        sendState();
+
+    }
+
+
+    updateHUD();
+
+
+}
+
+
+/* =====================================================
+   ZOMBİ GÜNCELLE
+===================================================== */
+
+function updateZombies(){
+
+    for(
+        let i=
+            zombies.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const z =
+            zombies[i];
+
+
+        const dx =
+            local.x -
+            z.x;
+
+
+        const dy =
+            local.y -
+            z.y;
+
+
+        const dist =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        if(
+            dist > 1
+        ){
+
+            z.x +=
+                dx/dist*
+                z.speed;
+
+
+            z.y +=
+                dy/dist*
+                z.speed;
+
+        }
+
+
+        /*
+           ZOMBİ BİZE DEĞERSE
+
+           Artık her frame can
+           azaltmıyoruz.
+
+           220 ms'de bir hasar veriyoruz.
+           Böylece temas ettiğinde can
+           belirgin şekilde hızlı azalıyor
+           ama anında ölmüyoruz.
+        */
+
+        if(
+            dist <
+            z.radius+16
+        ){
+
+            const now =
+                performance.now();
+
+
+            if(
+                now -
+                lastZombieDamage >
+                220
+            ){
+
+                local.hp -=
+                    7;
+
+
+                lastZombieDamage =
+                    now;
+
+
+                createParticles(
+                    local.x,
+                    local.y
+                );
+
+
+                if(
+                    local.hp <= 0
+                ){
+
+                    local.hp =
+                        0;
+
+
+                    die();
 
                 }
 
@@ -1404,69 +4947,173 @@ function updateHost(dt) {
 
         }
 
+
+        /*
+           ZOMBİ ÖLDÜ
+        */
+
+        if(
+            z.hp <= 0
+        ){
+
+            zombies.splice(
+                i,
+                1
+            );
+
+
+            score++;
+
+
+            /*
+               ARTIK HER ZOMBİ 1 JETON
+            */
+
+            saveData.coins +=
+                1;
+
+
+            save();
+
+
+            createParticles(
+                z.x,
+                z.y
+            );
+
+        }
+
     }
 
 
-    /* -------------------------
-       BULLETS
-    ------------------------- */
+    /*
+       Arkadaşa temas
+    */
 
-    for (
-        let i = bullets.length - 1;
-        i >= 0;
+    if(
+        gameConnection &&
+        remote.hp > 0
+    ){
+
+        for(
+            const z of zombies
+        ){
+
+            const dx =
+                remote.x -
+                z.x;
+
+
+            const dy =
+                remote.y -
+                z.y;
+
+
+            const dist =
+                Math.hypot(
+                    dx,
+                    dy
+                );
+
+
+            if(
+                dist <
+                z.radius+16
+            ){
+
+                remote.hp -=
+                    .04;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MERMİLER
+===================================================== */
+
+function updateBullets(){
+
+    for(
+        let i=
+            bullets.length-1;
+
+        i>=0;
+
         i--
-    ) {
+    ){
 
-        const b = bullets[i];
-
-        b.x += b.vx * dt;
-        b.y += b.vy * dt;
-
-        b.life -= dt;
-
-        let remove = false;
+        const b =
+            bullets[i];
 
 
-        if (
-            b.life <= 0 ||
-            b.x < 0 ||
-            b.x > WORLD_W ||
-            b.y < 0 ||
-            b.y > WORLD_H
-        ) {
+        b.x +=
+            b.vx;
 
-            remove = true;
+
+        b.y +=
+            b.vy;
+
+
+        b.life--;
+
+
+        if(
+            b.bomb
+        ){
+
+            if(
+                b.life <= 0
+            ){
+
+                explodeBomb(
+                    b.x,
+                    b.y,
+                    b.damage
+                );
+
+
+                bullets.splice(
+                    i,
+                    1
+                );
+
+            }
+
+
+            continue;
 
         }
 
 
-        if (!remove) {
+        if(
+            b.owner ===
+            "local"
+        ){
 
-            for (
-                let j = zombies.length - 1;
-                j >= 0;
-                j--
-            ) {
+            for(
+                const z of zombies
+            ){
 
-                const z = zombies[j];
-
-                const d =
+                if(
                     Math.hypot(
-                        b.x - z.x,
-                        b.y - z.y
-                    );
+                        b.x-z.x,
+                        b.y-z.y
+                    ) < 20
+                ){
 
-                if (d < z.radius + 7) {
+                    z.hp -=
+                        b.damage;
 
-                    z.health -= 30;
 
-                    remove = true;
+                    b.life =
+                        0;
 
-                    if (z.health <= 0) {
-
-                        zombies.splice(j, 1);
-
-                    }
 
                     break;
 
@@ -1477,631 +5124,1400 @@ function updateHost(dt) {
         }
 
 
-        if (remove) {
+        if(
+            b.owner ===
+            "remote"
+        ){
 
-            bullets.splice(i, 1);
+            for(
+                const z of zombies
+            ){
+
+                if(
+                    Math.hypot(
+                        b.x-z.x,
+                        b.y-z.y
+                    ) < 20
+                ){
+
+                    z.hp -=
+                        b.damage;
+
+
+                    b.life =
+                        0;
+
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        if(
+            b.life <= 0 ||
+            b.x < -100 ||
+            b.x >
+                canvas.width+100 ||
+            b.y < -100 ||
+            b.y >
+                canvas.height+100
+        ){
+
+            bullets.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   BOMBA PATLAMA
+===================================================== */
+
+function explodeBomb(
+    x,
+    y,
+    damage
+){
+
+    for(
+        const z of zombies
+    ){
+
+        const dist =
+            Math.hypot(
+                z.x-x,
+                z.y-y
+            );
+
+
+        if(
+            dist < 130
+        ){
+
+            z.hp -=
+                damage*
+                (
+                    1 -
+                    dist/130
+                );
 
         }
 
     }
 
 
-    broadcastWorld();
+    createParticles(
+        x,
+        y,
+        true
+    );
 
 }
 
 
-/* =========================================================
-   WORLD BROADCAST
-========================================================= */
+/* =====================================================
+   PARÇACIK
+===================================================== */
 
-let worldTimer = 0;
+function createParticles(
+    x,
+    y,
+    big=false
+){
 
-function broadcastWorld() {
+    const amount =
+        big
+        ?
+        25
+        :
+        8;
 
-    if (!connection) return;
 
-    worldTimer += 1;
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
-    if (worldTimer < 2) return;
+        particles.push({
 
-    worldTimer = 0;
+            x:
+                x,
 
-    connection.send({
+            y:
+                y,
 
-        type: "world",
+            vx:
+                (
+                    Math.random()-.5
+                )*4,
 
-        players,
-        zombies
+            vy:
+                (
+                    Math.random()-.5
+                )*4,
 
-    });
+            life:
+                30+
+                Math.random()*25
+
+        });
+
+    }
 
 }
 
 
-/* =========================================================
-   CLIENT UPDATE
-========================================================= */
+function updateParticles(){
 
-function updateClient(dt) {
+    for(
+        let i=
+            particles.length-1;
 
-    const p = players[myId];
+        i>=0;
 
-    if (!p || !p.alive) return;
+        i--
+    ){
 
+        const p =
+            particles[i];
 
-    let dx = 0;
-    let dy = 0;
-
-
-    if (keys["w"] || keys["arrowup"]) {
-        dy -= 1;
-    }
-
-    if (keys["s"] || keys["arrowdown"]) {
-        dy += 1;
-    }
-
-    if (keys["a"] || keys["arrowleft"]) {
-        dx -= 1;
-    }
-
-    if (keys["d"] || keys["arrowright"]) {
-        dx += 1;
-    }
-
-
-    if (
-        Math.abs(joyX) > 0.05 ||
-        Math.abs(joyY) > 0.05
-    ) {
-
-        dx = joyX;
-        dy = joyY;
-
-    }
-
-
-    const length =
-        Math.hypot(dx, dy);
-
-    if (length > 0) {
-
-        dx /= length;
-        dy /= length;
 
         p.x +=
-            dx * p.speed * dt;
+            p.vx;
+
 
         p.y +=
-            dy * p.speed * dt;
+            p.vy;
+
+
+        p.life--;
+
+
+        if(
+            p.life <= 0
+        ){
+
+            particles.splice(
+                i,
+                1
+            );
+
+        }
 
     }
-
-
-    p.x =
-        Math.max(
-            p.radius,
-            Math.min(
-                WORLD_W - p.radius,
-                p.x
-            )
-        );
-
-    p.y =
-        Math.max(
-            p.radius,
-            Math.min(
-                WORLD_H - p.radius,
-                p.y
-            )
-        );
-
-
-    if (
-        mouse.down ||
-        firePressed ||
-        keys[" "]
-    ) {
-
-        tryShoot();
-
-    }
-
-
-    p.shootCooldown =
-        Math.max(
-            0,
-            p.shootCooldown - dt
-        );
-
-
-    sendPlayerState(dt);
 
 }
 
 
-/* =========================================================
-   GAME LOOP
-========================================================= */
+/* =====================================================
+   STATE
+===================================================== */
 
-function gameLoop(now) {
+let lastStateSend =
+    0;
 
-    if (!running) return;
 
-    const dt =
-        Math.min(
-            (now - lastTime) / 1000,
-            0.05
+function sendState(){
+
+    const now =
+        performance.now();
+
+
+    if(
+        now -
+        lastStateSend <
+        70
+    )
+        return;
+
+
+    lastStateSend =
+        now;
+
+
+    if(isHost){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "state",
+
+                x:
+                    local.x,
+
+                y:
+                    local.y,
+
+                hp:
+                    local.hp,
+
+                name:
+                    myName,
+
+                localHp:
+                    remote.hp,
+
+                score:
+                    score
+
+            }
         );
 
-    lastTime = now;
+    }else{
 
+        sendTo(
+            gameConnection,
+            {
 
-    if (isHost) {
+                type:
+                    "input",
 
-        updateHost(dt);
+                x:
+                    local.x,
 
-    } else {
+                y:
+                    local.y
 
-        updateClient(dt);
+            }
+        );
 
     }
 
-
-    updateCamera();
-
-    draw();
-
-    updateHUD();
-
-    requestAnimationFrame(gameLoop);
-
 }
 
 
-/* =========================================================
-   CAMERA
-========================================================= */
+/* =====================================================
+   ÇİZ
+===================================================== */
 
-function updateCamera() {
-
-    const p = players[myId];
-
-    if (!p) return;
-
-    camera.x =
-        p.x - W / 2;
-
-    camera.y =
-        p.y - H / 2;
-
-
-    camera.x =
-        Math.max(
-            0,
-            Math.min(
-                WORLD_W - W,
-                camera.x
-            )
-        );
-
-    camera.y =
-        Math.max(
-            0,
-            Math.min(
-                WORLD_H - H,
-                camera.y
-            )
-        );
-
-}
-
-
-/* =========================================================
-   DRAW
-========================================================= */
-
-function draw() {
+function draw(){
 
     ctx.clearRect(
         0,
         0,
-        W,
-        H
+        canvas.width,
+        canvas.height
     );
 
 
-    /* -------------------------
-       BACKGROUND
-    ------------------------- */
+    ctx.fillStyle =
+        "#111820";
 
-    ctx.fillStyle = "#10161a";
 
     ctx.fillRect(
         0,
         0,
-        W,
-        H
+        canvas.width,
+        canvas.height
     );
 
 
-    /* -------------------------
-       GRID
-    ------------------------- */
-
-    const grid = 80;
+    /* GRID */
 
     ctx.strokeStyle =
-        "rgba(255,255,255,.045)";
+        "rgba(255,255,255,.035)";
 
-    ctx.lineWidth = 1;
 
-    for (
-        let x =
-            -camera.x % grid;
-        x < W;
-        x += grid
-    ) {
+    ctx.lineWidth =
+        1;
+
+
+    const grid =
+        45;
+
+
+    for(
+        let x=0;
+        x<canvas.width;
+        x+=grid
+    ){
 
         ctx.beginPath();
 
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, H);
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+
+        ctx.lineTo(
+            x,
+            canvas.height
+        );
+
 
         ctx.stroke();
 
     }
 
 
-    for (
-        let y =
-            -camera.y % grid;
-        y < H;
-        y += grid
-    ) {
+    for(
+        let y=0;
+        y<canvas.height;
+        y+=grid
+    ){
 
         ctx.beginPath();
 
-        ctx.moveTo(0, y);
-        ctx.lineTo(W, y);
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+
+        ctx.lineTo(
+            canvas.width,
+            y
+        );
+
 
         ctx.stroke();
 
     }
 
 
-    /* -------------------------
-       WORLD BORDER
-    ------------------------- */
-
-    ctx.strokeStyle = "#45524a";
-    ctx.lineWidth = 5;
-
-    ctx.strokeRect(
-        -camera.x,
-        -camera.y,
-        WORLD_W,
-        WORLD_H
+    zombies.forEach(
+        drawZombie
     );
 
 
-    /* -------------------------
-       BULLETS
-    ------------------------- */
-
-    for (const b of bullets) {
-
-        ctx.fillStyle = "#ffe66d";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            b.x - camera.x,
-            b.y - camera.y,
-            5,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-    }
+    bullets.forEach(
+        drawBullet
+    );
 
 
-    /* -------------------------
-       ZOMBIES
-    ------------------------- */
+    particles.forEach(
+        function(p){
 
-    for (const z of zombies) {
-
-        const x =
-            z.x - camera.x;
-
-        const y =
-            z.y - camera.y;
+            ctx.fillStyle =
+                "rgba(255,212,59,.8)";
 
 
-        ctx.fillStyle = "#76b852";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            z.radius,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
+            ctx.beginPath();
 
 
-        ctx.fillStyle = "#111";
-
-        ctx.beginPath();
-        ctx.arc(x - 6, y - 4, 3, 0, Math.PI * 2);
-        ctx.arc(x + 6, y - 4, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-
-        /* health */
-
-        ctx.fillStyle = "#222";
-
-        ctx.fillRect(
-            x - 20,
-            y - 30,
-            40,
-            5
-        );
-
-        ctx.fillStyle = "#ef5350";
-
-        ctx.fillRect(
-            x - 20,
-            y - 30,
-            40 *
-            Math.max(
+            ctx.arc(
+                p.x,
+                p.y,
+                3,
                 0,
-                z.health / z.maxHealth
-            ),
-            5
+                Math.PI*2
+            );
+
+
+            ctx.fill();
+
+        }
+    );
+
+
+    if(
+        gameConnection &&
+        remote.x > -50
+    ){
+
+        drawPlayer(
+            remote.x,
+            remote.y,
+            "#3867d6",
+            remote.name
         );
 
     }
 
 
-    /* -------------------------
-       PLAYERS
-    ------------------------- */
-
-    for (const id in players) {
-
-        const p = players[id];
-
-        if (!p.alive) continue;
-
-        const x =
-            p.x - camera.x;
-
-        const y =
-            p.y - camera.y;
+    drawPlayer(
+        local.x,
+        local.y,
+        "#20bf6b",
+        myName
+    );
 
 
-        /* gun */
+    /*
+       NİŞAN ÇİZGİSİ
+    */
+
+    if(
+        started &&
+        !gameOver
+    ){
+
+        const length =
+            75;
+
+
+        const tx =
+            local.x +
+            Math.cos(
+                aimAngle
+            ) *
+            length;
+
+
+        const ty =
+            local.y +
+            Math.sin(
+                aimAngle
+            ) *
+            length;
+
 
         ctx.save();
 
-        ctx.translate(x, y);
 
-        ctx.rotate(p.angle);
+        ctx.strokeStyle =
+            "rgba(255,71,87,.75)";
 
-        ctx.fillStyle = "#222";
 
-        ctx.fillRect(
+        ctx.lineWidth =
+            2;
+
+
+        ctx.setLineDash([
             5,
-            -5,
-            28,
-            10
-        );
+            5
+        ]);
 
-        ctx.restore();
-
-
-        /* player */
-
-        ctx.fillStyle = p.color;
 
         ctx.beginPath();
 
-        ctx.arc(
-            x,
-            y,
-            p.radius,
-            0,
-            Math.PI * 2
+
+        ctx.moveTo(
+            local.x,
+            local.y
         );
 
-        ctx.fill();
 
+        ctx.lineTo(
+            tx,
+            ty
+        );
 
-        ctx.strokeStyle =
-            id === myId
-                ? "#ffffff"
-                : "rgba(255,255,255,.4)";
-
-        ctx.lineWidth = 2;
 
         ctx.stroke();
 
 
-        /* name */
-
-        ctx.fillStyle = "white";
-
-        ctx.font =
-            "bold 13px Arial";
-
-        ctx.textAlign = "center";
-
-        ctx.fillText(
-            p.name,
-            x,
-            y - 30
-        );
+        ctx.setLineDash([]);
 
 
-        /* health */
-
-        ctx.fillStyle = "#222";
-
-        ctx.fillRect(
-            x - 22,
-            y + 27,
-            44,
-            5
-        );
-
-        ctx.fillStyle = "#4fd35b";
-
-        ctx.fillRect(
-            x - 22,
-            y + 27,
-            44 *
-            Math.max(
-                0,
-                p.health / p.maxHealth
-            ),
-            5
-        );
-
-    }
+        ctx.strokeStyle =
+            "#ff4757";
 
 
-    /* -------------------------
-       DEAD MESSAGE
-    ------------------------- */
+        ctx.beginPath();
 
-    const me = players[myId];
 
-    if (me && !me.alive) {
-
-        ctx.fillStyle =
-            "rgba(0,0,0,.55)";
-
-        ctx.fillRect(
+        ctx.arc(
+            tx,
+            ty,
+            8,
             0,
-            0,
-            W,
-            H
+            Math.PI*2
         );
 
-        ctx.fillStyle = "white";
 
-        ctx.font =
-            "bold 34px Arial";
+        ctx.stroke();
 
-        ctx.textAlign = "center";
 
-        ctx.fillText(
-            "OYUNCU DÜŞTÜ",
-            W / 2,
-            H / 2
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            tx-12,
+            ty
         );
+
+
+        ctx.lineTo(
+            tx+12,
+            ty
+        );
+
+
+        ctx.moveTo(
+            tx,
+            ty-12
+        );
+
+
+        ctx.lineTo(
+            tx,
+            ty+12
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.restore();
 
     }
 
 }
 
 
-/* =========================================================
-   HUD
-========================================================= */
+/* =====================================================
+   OYUNCU ÇİZ
+===================================================== */
 
-function updateHUD() {
+function drawPlayer(
+    x,
+    y,
+    color,
+    name
+){
 
-    const p = players[myId];
+    ctx.fillStyle =
+        "rgba(0,0,0,.3)";
 
-    if (!p) return;
 
-    healthText.textContent =
+    ctx.beginPath();
+
+
+    ctx.ellipse(
+        x,
+        y+13,
+        18,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        color;
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        17,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#111820";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x-6,
+        y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.arc(
+        x+6,
+        y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "white";
+
+
+    ctx.font =
+        "12px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+        name,
+        x,
+        y-25
+    );
+
+}
+
+
+/* =====================================================
+   ZOMBİ ÇİZ
+===================================================== */
+
+function drawZombie(
+    z
+){
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.35)";
+
+
+    ctx.beginPath();
+
+
+    ctx.ellipse(
+        z.x,
+        z.y+13,
+        19,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#6ab04c";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        z.x,
+        z.y,
+        17,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#111";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        z.x-6,
+        z.y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.arc(
+        z.x+6,
+        z.y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    /* CAN BAR */
+
+    ctx.fillStyle =
+        "#303943";
+
+
+    ctx.fillRect(
+        z.x-20,
+        z.y-27,
+        40,
+        5
+    );
+
+
+    ctx.fillStyle =
+        "#20bf6b";
+
+
+    ctx.fillRect(
+        z.x-20,
+        z.y-27,
+        40 *
         Math.max(
             0,
-            Math.floor(p.health)
+            z.hp/88
+        ),
+        5
+    );
+
+}
+
+
+/* =====================================================
+   MERMİ ÇİZ
+===================================================== */
+
+function drawBullet(
+    b
+){
+
+    ctx.fillStyle =
+        b.bomb
+        ?
+        "#ffd43b"
+        :
+        "#fff";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        b.x,
+        b.y,
+        b.bomb
+        ?
+        7
+        :
+        4,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   ÖLÜM
+===================================================== */
+
+function die(){
+
+    if(gameOver)
+        return;
+
+
+    gameOver =
+        true;
+
+
+    document
+        .getElementById(
+            "messageTitle"
+        )
+        .textContent =
+        "OYUN BİTTİ";
+
+
+    document
+        .getElementById(
+            "messageText"
+        )
+        .textContent =
+        "Skorun: " +
+        score +
+        " • Kazandığın jeton: " +
+        score;
+
+
+    document
+        .getElementById(
+            "gameMessage"
+        )
+        .classList.remove(
+            "hidden"
         );
 
-    healthFill.style.width =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                p.health
+}
+
+
+/* =====================================================
+   ANA MENÜ
+===================================================== */
+
+document
+    .getElementById(
+        "backMenuBtn"
+    )
+    .onclick =
+    function(){
+
+        started =
+            false;
+
+
+        gameOver =
+            false;
+
+
+        game.classList.add(
+            "hidden"
+        );
+
+
+        document
+            .getElementById(
+                "menu"
             )
-        ) + "%";
+            .classList.remove(
+                "hidden"
+            );
 
-    zombieText.textContent =
-        zombies.length;
+
+        updateCoins();
+
+    };
+
+
+/* =====================================================
+   HUD
+===================================================== */
+
+function updateHUD(){
+
+    document
+        .getElementById(
+            "hpText"
+        )
+        .textContent =
+        Math.max(
+            0,
+            Math.floor(
+                local.hp
+            )
+        );
+
+
+    document
+        .getElementById(
+            "hpFill"
+        )
+        .style.width =
+        Math.max(
+            0,
+            local.hp
+        ) +
+        "%";
+
+
+    document
+        .getElementById(
+            "scoreText"
+        )
+        .textContent =
+        score;
+
+
+    document
+        .getElementById(
+            "weaponText"
+        )
+        .textContent =
+        weapons[
+            currentWeapon
+        ].name;
+
+
+    document
+        .getElementById(
+            "gameCoinText"
+        )
+        .textContent =
+        saveData.coins;
 
 }
 
 
-/* =========================================================
-   DISCONNECT
-========================================================= */
+/* =====================================================
+   ENVANTER
+===================================================== */
 
-disconnectBtn.addEventListener("click", () => {
+function updateInventory(){
 
-    running = false;
+    document
+        .querySelectorAll(
+            ".weapon-slot"
+        )
+        .forEach(
+            function(slot){
 
-    connected = false;
+                const weapon =
+                    slot.dataset.weapon;
 
-    if (connection) {
 
-        connection.close();
+                if(
+                    saveData.inventory[
+                        weapon
+                    ]
+                ){
+
+                    slot.classList.remove(
+                        "hidden"
+                    );
+
+                }else{
+
+                    slot.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+
+                if(
+                    weapon ===
+                    currentWeapon
+                ){
+
+                    slot.classList.add(
+                        "active"
+                    );
+
+                }else{
+
+                    slot.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+
+document
+    .querySelectorAll(
+        ".weapon-slot"
+    )
+    .forEach(
+        function(slot){
+
+            slot.onclick =
+            function(){
+
+                selectWeapon(
+                    slot.dataset.weapon
+                );
+
+            };
+
+        }
+    );
+
+
+function selectWeapon(
+    weapon
+){
+
+    if(
+        !saveData.inventory[
+            weapon
+        ]
+    ){
+
+        return;
 
     }
 
-    if (peer) {
 
-        peer.destroy();
+    currentWeapon =
+        weapon;
+
+
+    updateInventory();
+
+    updateHUD();
+
+}
+
+
+/* =====================================================
+   JETON GÖSTER
+===================================================== */
+
+function updateCoins(){
+
+    document
+        .getElementById(
+            "coinDisplay"
+        )
+        .textContent =
+        saveData.coins;
+
+
+    document
+        .getElementById(
+            "topCoinDisplay"
+        )
+        .textContent =
+        saveData.coins;
+
+}
+
+
+/* =====================================================
+   DÜKKAN
+===================================================== */
+
+const shopPrices = {
+
+    smg:
+        150,
+
+    auto:
+        350,
+
+    bomb:
+        450
+
+};
+
+
+function buyWeapon(
+    weapon
+){
+
+    const price =
+        shopPrices[
+            weapon
+        ];
+
+
+    const status =
+        document
+            .getElementById(
+                "shopStatus"
+            );
+
+
+    if(
+        saveData.inventory[
+            weapon
+        ]
+    ){
+
+        status.textContent =
+            "Bu ürüne zaten sahipsin.";
+
+        return;
 
     }
 
-    location.reload();
 
-});
+    if(
+        saveData.coins <
+        price
+    ){
 
+        status.textContent =
+            "❌ Yeterli jetonun yok.";
 
-/* =========================================================
-   PREVENT MOBILE SCROLL / ZOOM
-========================================================= */
+        return;
 
-document.addEventListener(
-    "touchmove",
-    e => {
-        e.preventDefault();
-    },
-    {
-        passive: false
     }
-);
 
-document.addEventListener(
-    "gesturestart",
-    e => {
-        e.preventDefault();
+
+    saveData.coins -=
+        price;
+
+
+    saveData.inventory[
+        weapon
+    ] =
+        true;
+
+
+    if(
+        weapon ===
+        "bomb"
+    ){
+
+        bombs =
+            5;
+
     }
-);
 
 
-/* =========================================================
-   INITIAL
-========================================================= */
+    save();
 
-setStatus(
-    "Oda oluştur veya arkadaşının odasına katıl."
-);
+
+    status.textContent =
+        "✅ " +
+        weapons[
+            weapon
+        ].name +
+        " satın alındı!";
+
+
+    updateInventory();
+
+}
+
+
+document
+    .getElementById(
+        "buySmgBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "smg"
+        );
+
+    };
+
+
+document
+    .getElementById(
+        "buyAutoBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "auto"
+        );
+
+    };
+
+
+document
+    .getElementById(
+        "buyBombBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "bomb"
+        );
+
+    };
+
+
+function updateShop(){
+
+    const map = {
+
+        smg:
+            "buySmgBtn",
+
+        auto:
+            "buyAutoBtn",
+
+        bomb:
+            "buyBombBtn"
+
+    };
+
+
+    Object.keys(
+        map
+    )
+    .forEach(
+        function(weapon){
+
+            const btn =
+                document.getElementById(
+                    map[weapon]
+                );
+
+
+            if(
+                saveData.inventory[
+                    weapon
+                ]
+            ){
+
+                btn.textContent =
+                    "SAHİPSİN";
+
+
+                btn.disabled =
+                    true;
+
+
+                btn.classList.remove(
+                    "gold"
+                );
+
+
+                btn.classList.add(
+                    "dark"
+                );
+
+            }else{
+
+                btn.textContent =
+                    "SATIN AL";
+
+
+                btn.disabled =
+                    false;
+
+
+                btn.classList.add(
+                    "gold"
+                );
+
+
+                btn.classList.remove(
+                    "dark"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   LOBİ OYUNCU ÇIKTI
+===================================================== */
+
+function removeLobbyPlayer(
+    id
+){
+
+    if(
+        lobby.players[id]
+    ){
+
+        delete lobby.players[
+            id
+        ];
+
+
+        renderLobby();
+
+    }
+
+}
+
+
+/* =====================================================
+   HTML GÜVENLİĞİ
+===================================================== */
+
+function escapeHTML(
+    text
+){
+
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   OYUN DÖNGÜSÜ
+===================================================== */
+
+function loop(
+    time
+){
+
+    if(!started)
+        return;
+
+
+    const dt =
+        Math.min(
+            50,
+            time-lastTime
+        );
+
+
+    lastTime =
+        time;
+
+
+    update(
+        dt
+    );
+
+
+    draw();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =====================================================
+   BAŞLANGIÇ
+===================================================== */
+
+updateCoins();
+
+updateShop();
+
+updateInventory();
+
+renderFriends();
+
 </script>
 
 </body>
