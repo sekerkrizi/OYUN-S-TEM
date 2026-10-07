@@ -1,0 +1,6521 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
+
+<title>Zombi Avı Online</title>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#080b10;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    touch-action:none;
+}
+
+button,
+input{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =====================================================
+   ANA MENÜ
+===================================================== */
+
+#menu{
+    position:fixed;
+    inset:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #17212c 0,
+            #080b10 55%
+        );
+
+    z-index:50;
+
+    padding:25px;
+}
+
+.menu-container{
+    width:min(1100px,100%);
+    margin:auto;
+}
+
+.logo{
+    text-align:center;
+
+    font-size:
+        clamp(34px,6vw,64px);
+
+    font-weight:900;
+
+    color:#ff4757;
+
+    text-shadow:
+        0 5px 25px
+        rgba(255,71,87,.25);
+
+    margin:15px 0 5px;
+}
+
+.subtitle{
+    text-align:center;
+
+    color:#9ba7b4;
+
+    margin-bottom:18px;
+}
+
+
+/* =====================================================
+   TOPLAM JETON
+===================================================== */
+
+.total-coins{
+    width:max-content;
+    max-width:100%;
+
+    margin:0 auto 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #27200b,
+            #17140b
+        );
+
+    border:
+        1px solid
+        rgba(255,212,59,.35);
+
+    border-radius:16px;
+
+    padding:
+        12px 22px;
+
+    color:#ffd43b;
+
+    font-size:22px;
+
+    font-weight:900;
+
+    box-shadow:
+        0 8px 30px
+        rgba(255,212,59,.08);
+}
+
+.total-coins span{
+    color:#fff;
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.menu-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
+}
+
+.panel{
+    background:
+        rgba(20,26,34,.94);
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.35);
+}
+
+.panel h2{
+    margin-bottom:15px;
+
+    font-size:21px;
+}
+
+
+/* =====================================================
+   PROFİL
+===================================================== */
+
+.profile{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    background:#10161e;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    margin-bottom:14px;
+}
+
+.profile-name{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.coin-box{
+    color:#ffd43b;
+
+    font-weight:bold;
+
+    font-size:20px;
+}
+
+input{
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:
+        1px solid
+        #354353;
+
+    outline:none;
+
+    background:#0c1118;
+
+    color:white;
+
+    font-size:16px;
+
+    margin-bottom:10px;
+}
+
+input:focus{
+    border-color:#ff4757;
+}
+
+.btn{
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#ff4757;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:800;
+
+    margin-top:8px;
+
+    transition:.15s;
+}
+
+.btn:hover{
+    filter:brightness(1.1);
+
+    transform:
+        translateY(-1px);
+}
+
+.btn.green{
+    background:#20bf6b;
+}
+
+.btn.blue{
+    background:#3867d6;
+}
+
+.btn.dark{
+    background:#293442;
+}
+
+.btn.gold{
+    background:#e6a900;
+
+    color:#111;
+}
+
+.btn:disabled{
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+}
+
+.small-status{
+    color:#9ba7b4;
+
+    font-size:13px;
+
+    min-height:20px;
+
+    margin-top:8px;
+}
+
+
+/* =====================================================
+   ARKADAŞ
+===================================================== */
+
+.friend-search{
+    display:flex;
+
+    gap:8px;
+}
+
+.friend-search input{
+    margin:0;
+}
+
+.friend-search button{
+    width:130px;
+
+    flex-shrink:0;
+}
+
+.search-result,
+.friend-item,
+.request-item{
+    background:#10161e;
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:13px;
+
+    padding:12px;
+
+    margin-top:10px;
+}
+
+.friend-row{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+}
+
+.friend-name{
+    font-weight:bold;
+}
+
+.online-dot{
+    display:inline-block;
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:#20bf6b;
+
+    margin-right:5px;
+}
+
+.friend-action{
+    padding:9px 12px;
+
+    border-radius:9px;
+
+    background:#3867d6;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.request-actions{
+    display:flex;
+
+    gap:7px;
+
+    margin-top:9px;
+}
+
+.request-actions button{
+    flex:1;
+
+    padding:9px;
+
+    border-radius:9px;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.accept{
+    background:#20bf6b;
+}
+
+.reject{
+    background:#eb3b5a;
+}
+
+
+/* =====================================================
+   DÜKKAN
+===================================================== */
+
+.shop-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:10px;
+}
+
+.shop-item{
+    background:#10161e;
+
+    border:
+        1px solid
+        #293442;
+
+    border-radius:15px;
+
+    padding:14px;
+
+    min-height:160px;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.weapon-icon{
+    font-size:42px;
+
+    margin-bottom:8px;
+}
+
+.shop-item h3{
+    margin-bottom:5px;
+}
+
+.shop-item p{
+    color:#9ba7b4;
+
+    font-size:13px;
+
+    flex:1;
+}
+
+.price{
+    color:#ffd43b;
+
+    font-weight:bold;
+
+    margin:9px 0;
+}
+
+
+/* =====================================================
+   LOBİ
+===================================================== */
+
+.lobby{
+    margin-top:15px;
+
+    background:#0d131b;
+
+    border:
+        1px solid
+        #344251;
+
+    border-radius:15px;
+
+    padding:15px;
+}
+
+.lobby-title{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+}
+
+.lobby-player{
+    background:#18212b;
+
+    padding:10px 12px;
+
+    border-radius:10px;
+
+    margin-top:7px;
+
+    display:flex;
+
+    justify-content:space-between;
+}
+
+.host-badge{
+    color:#ffd43b;
+
+    font-size:12px;
+}
+
+
+/* =====================================================
+   OYUN
+===================================================== */
+
+#game{
+    position:fixed;
+
+    inset:0;
+
+    background:#111820;
+
+    z-index:10;
+}
+
+#canvas{
+    display:block;
+
+    width:100%;
+    height:100%;
+}
+
+#hud{
+    position:fixed;
+
+    left:15px;
+    top:15px;
+
+    z-index:20;
+
+    pointer-events:none;
+}
+
+.hud-box{
+    background:
+        rgba(10,14,19,.82);
+
+    border:
+        1px solid
+        #344251;
+
+    border-radius:12px;
+
+    padding:10px 13px;
+
+    margin-bottom:8px;
+
+    min-width:180px;
+}
+
+.hp-bar{
+    width:160px;
+
+    height:12px;
+
+    background:#303943;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    margin-top:5px;
+}
+
+#hpFill{
+    width:100%;
+
+    height:100%;
+
+    background:#20bf6b;
+}
+
+
+/* =====================================================
+   ENVANTER
+===================================================== */
+
+#inventory{
+    position:fixed;
+
+    left:50%;
+
+    bottom:18px;
+
+    transform:
+        translateX(-50%);
+
+    z-index:25;
+
+    display:flex;
+
+    gap:8px;
+
+    background:
+        rgba(8,11,15,.9);
+
+    border:
+        1px solid
+        #394654;
+
+    border-radius:15px;
+
+    padding:8px;
+}
+
+.weapon-slot{
+    width:75px;
+    height:65px;
+
+    border:
+        2px solid
+        #344251;
+
+    background:#141c25;
+
+    border-radius:11px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#b8c2cc;
+
+    font-size:11px;
+}
+
+.weapon-slot.active{
+    border-color:#ffd43b;
+
+    color:white;
+
+    box-shadow:
+        0 0 12px
+        rgba(255,212,59,.2);
+}
+
+.weapon-slot .icon{
+    font-size:23px;
+}
+
+
+/* =====================================================
+   GAME MESSAGE
+===================================================== */
+
+#gameMessage{
+    position:fixed;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    z-index:40;
+
+    text-align:center;
+
+    background:
+        rgba(8,11,15,.94);
+
+    border:
+        1px solid
+        #3a4654;
+
+    border-radius:18px;
+
+    padding:30px;
+
+    min-width:280px;
+}
+
+#gameMessage h2{
+    margin-bottom:10px;
+
+    font-size:30px;
+}
+
+#gameMessage p{
+    color:#9ba7b4;
+
+    margin-bottom:18px;
+}
+
+
+/* =====================================================
+   MOBİL KONTROLLER
+===================================================== */
+
+#mobileControls{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:30;
+
+    pointer-events:none;
+}
+
+.mobile-console{
+    position:absolute;
+
+    width:155px;
+    height:155px;
+
+    border-radius:50%;
+
+    pointer-events:auto;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+}
+
+#moveConsole{
+    left:18px;
+
+    bottom:25px;
+}
+
+#aimConsole{
+    right:18px;
+
+    bottom:25px;
+}
+
+.console-ring{
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    background:
+        rgba(20,28,38,.68);
+
+    border:
+        2px solid
+        rgba(255,255,255,.2);
+
+    box-shadow:
+        inset 0 0 0 12px
+        rgba(255,255,255,.035),
+
+        0 8px 25px
+        rgba(0,0,0,.35);
+}
+
+.console-ring::before{
+    content:"";
+
+    position:absolute;
+
+    inset:25px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,.16);
+
+    border-radius:50%;
+}
+
+.joystick{
+    position:absolute;
+
+    width:65px;
+    height:65px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.18);
+
+    border:
+        2px solid
+        rgba(255,255,255,.3);
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,.35);
+}
+
+.console-label{
+    position:absolute;
+
+    width:100%;
+
+    text-align:center;
+
+    top:-25px;
+
+    color:
+        rgba(255,255,255,.75);
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+}
+
+
+/* =====================================================
+   NİŞANGAH
+===================================================== */
+
+#aimReticle{
+    width:54px;
+    height:54px;
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    pointer-events:none;
+}
+
+.cross-h{
+    position:absolute;
+
+    left:0;
+    right:0;
+
+    top:50%;
+
+    height:2px;
+
+    background:#ff4757;
+
+    transform:
+        translateY(-50%);
+}
+
+.cross-v{
+    position:absolute;
+
+    top:0;
+    bottom:0;
+
+    left:50%;
+
+    width:2px;
+
+    background:#ff4757;
+
+    transform:
+        translateX(-50%);
+}
+
+.cross-circle{
+    position:absolute;
+
+    inset:14px;
+
+    border:
+        2px solid
+        #ff4757;
+
+    border-radius:50%;
+}
+
+.cross-dot{
+    position:absolute;
+
+    width:5px;
+    height:5px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    background:#ff4757;
+
+    border-radius:50%;
+}
+
+
+/* =====================================================
+   MOBİL
+===================================================== */
+
+@media(max-width:800px){
+
+    .menu-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    #mobileControls{
+        display:block;
+    }
+
+    #inventory{
+        bottom:190px;
+
+        max-width:95%;
+
+        overflow-x:auto;
+    }
+
+    .weapon-slot{
+        width:64px;
+
+        min-width:64px;
+
+        height:58px;
+    }
+
+    #hud{
+        left:8px;
+
+        top:8px;
+    }
+
+    .hud-box{
+        min-width:150px;
+
+        padding:8px 10px;
+    }
+
+    .hp-bar{
+        width:130px;
+    }
+
+    #menu{
+        padding:12px;
+    }
+
+    .panel{
+        padding:15px;
+    }
+
+    .friend-search{
+        display:block;
+    }
+
+    .friend-search button{
+        width:100%;
+
+        margin-top:7px;
+    }
+
+    .shop-grid{
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .shop-item{
+        min-height:145px;
+
+        padding:11px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     ANA MENÜ
+===================================================== -->
+
+<div id="menu">
+
+<div class="menu-container">
+
+    <div class="logo">
+        🧟 ZOMBİ AVI
+    </div>
+
+    <div class="subtitle">
+        Arkadaşlarınla veya tek başına zombilere karşı savaş!
+    </div>
+
+
+    <!-- TOPLAM JETON -->
+
+    <div class="total-coins">
+        🪙 Toplam Jeton:
+        <span id="topCoinDisplay">
+            0
+        </span>
+    </div>
+
+
+    <div class="menu-grid">
+
+
+        <!-- =================================================
+             SOL TARAF
+        ================================================== -->
+
+        <div>
+
+
+            <!-- PROFİL -->
+
+            <div class="panel">
+
+                <h2>
+                    👤 Profil
+                </h2>
+
+                <div id="profileArea">
+
+                    <input
+                        id="nameInput"
+                        maxlength="20"
+                        placeholder="Oyundaki kullanıcı adın">
+
+                    <button
+                        class="btn"
+                        id="onlineBtn">
+                        ONLINE OL
+                    </button>
+
+                    <div
+                        id="onlineStatus"
+                        class="small-status">
+
+                        Önce kullanıcı adını belirle.
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="profileInfo"
+                    class="hidden">
+
+                    <div class="profile">
+
+                        <div>
+
+                            <div
+                                class="profile-name"
+                                id="myNameDisplay">
+                            </div>
+
+                            <div class="small-status">
+
+                                🟢 Çevrimiçi
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="coin-box">
+
+                            🪙
+                            <span
+                                id="coinDisplay">
+                                0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="btn green"
+                        id="soloBtn">
+
+                        ▶ TEK BAŞINA OYNA
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ARKADAŞLAR -->
+
+            <div
+                class="panel"
+                style="margin-top:20px;">
+
+                <h2>
+                    👥 Arkadaşlarım
+                </h2>
+
+
+                <div class="friend-search">
+
+                    <input
+                        id="friendInput"
+                        placeholder="Arkadaş kullanıcı adını yaz">
+
+                    <button
+                        class="btn blue"
+                        id="searchFriendBtn">
+
+                        ARA
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="searchResult">
+                </div>
+
+
+                <div
+                    id="friendRequests">
+                </div>
+
+
+                <div
+                    id="friendsList">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SAĞ TARAF
+        ================================================== -->
+
+        <div>
+
+
+            <!-- ODA -->
+
+            <div
+                class="panel"
+                id="lobbyPanel">
+
+                <h2>
+                    🎮 Odan
+                </h2>
+
+
+                <div
+                    id="lobbyEmpty"
+                    class="small-status">
+
+                    Henüz bir oyun daveti yok.
+
+                </div>
+
+
+                <div
+                    id="lobby"
+                    class="lobby hidden">
+
+
+                    <div class="lobby-title">
+
+                        <strong>
+                            👥 Odadakiler
+                        </strong>
+
+                        <span
+                            id="lobbyStatus"
+                            class="small-status">
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="lobbyPlayers">
+                    </div>
+
+
+                    <button
+                        id="startLobbyBtn"
+                        class="btn green"
+                        disabled>
+
+                        ▶ BAŞLAT
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- DÜKKAN -->
+
+            <div
+                class="panel"
+                style="margin-top:20px;">
+
+                <h2>
+                    🔫 Silah Dükkanı
+                </h2>
+
+                <div
+                    class="small-status"
+                    style="margin-bottom:12px;">
+
+                    Jetonlarını kullanarak
+                    silah ve bomba satın al.
+
+                </div>
+
+
+                <div class="shop-grid">
+
+
+                    <!-- TABANCA -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Tabanca
+                        </h3>
+
+                        <p>
+                            Başlangıç silahın.
+                            Dengeli hasar ve hız.
+                        </p>
+
+                        <div class="price">
+                            ÜCRETSİZ
+                        </div>
+
+                        <button
+                            class="btn dark"
+                            disabled>
+
+                            SAHİPSİN
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- HAFİF -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Hafif Taramalı
+                        </h3>
+
+                        <p>
+                            Daha hızlı ateş eder.
+                            Hasarı düşüktür.
+                        </p>
+
+                        <div class="price">
+                            🪙 150
+                        </div>
+
+                        <button
+                            id="buySmgBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- NORMAL -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            🔫
+                        </div>
+
+                        <h3>
+                            Normal Taramalı
+                        </h3>
+
+                        <p>
+                            Güçlü ve hızlı ateş eden
+                            otomatik silah.
+                        </p>
+
+                        <div class="price">
+                            🪙 350
+                        </div>
+
+                        <button
+                            id="buyAutoBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- BOMBA -->
+
+                    <div class="shop-item">
+
+                        <div class="weapon-icon">
+                            💣
+                        </div>
+
+                        <h3>
+                            Bomba
+                        </h3>
+
+                        <p>
+                            Zombilere alan hasarı verir.
+                        </p>
+
+                        <div class="price">
+                            🪙 450
+                        </div>
+
+                        <button
+                            id="buyBombBtn"
+                            class="btn gold">
+
+                            SATIN AL
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="shopStatus"
+                    class="small-status">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+
+
+<!-- =====================================================
+     OYUN
+===================================================== -->
+
+<div
+    id="game"
+    class="hidden">
+
+    <canvas id="canvas"></canvas>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hud-box">
+
+            ❤️ CAN:
+            <span id="hpText">
+                100
+            </span>
+
+            <div class="hp-bar">
+
+                <div
+                    id="hpFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🧟 ÖLDÜRME:
+            <span id="scoreText">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🔫:
+            <span id="weaponText">
+                Tabanca
+            </span>
+
+        </div>
+
+
+        <div class="hud-box">
+
+            🪙:
+            <span id="gameCoinText">
+                0
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ENVANTER -->
+
+    <div id="inventory">
+
+
+        <div
+            class="weapon-slot active"
+            data-weapon="pistol">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Tabanca
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="smg">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Hafif
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="auto">
+
+            <div class="icon">
+                🔫
+            </div>
+
+            <div>
+                Taramalı
+            </div>
+
+        </div>
+
+
+        <div
+            class="weapon-slot hidden"
+            data-weapon="bomb">
+
+            <div class="icon">
+                💣
+            </div>
+
+            <div>
+                Bomba
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MOBİL KONTROLLER -->
+
+    <div id="mobileControls">
+
+
+        <!-- HAREKET -->
+
+        <div
+            id="moveConsole"
+            class="mobile-console">
+
+            <div class="console-label">
+                HAREKET
+            </div>
+
+            <div class="console-ring">
+            </div>
+
+            <div
+                id="moveStick"
+                class="joystick">
+            </div>
+
+        </div>
+
+
+        <!-- NİŞAN -->
+
+        <div
+            id="aimConsole"
+            class="mobile-console">
+
+            <div class="console-label">
+                NİŞAN / ATEŞ
+            </div>
+
+            <div class="console-ring">
+            </div>
+
+
+            <div id="aimReticle">
+
+                <div class="cross-h">
+                </div>
+
+                <div class="cross-v">
+                </div>
+
+                <div class="cross-circle">
+                </div>
+
+                <div class="cross-dot">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- OYUN BİTTİ -->
+
+    <div
+        id="gameMessage"
+        class="hidden">
+
+        <h2
+            id="messageTitle">
+            OYUN BİTTİ
+        </h2>
+
+        <p
+            id="messageText">
+        </p>
+
+        <button
+            id="backMenuBtn"
+            class="btn">
+
+            ANA MENÜ
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   KAYIT SİSTEMİ
+===================================================== */
+
+/*
+   Yeni oyuncular artık 0 jetonla başlıyor.
+*/
+
+const SAVE_KEY =
+    "zombi_avi_player_v4";
+
+
+let saveData =
+    JSON.parse(
+        localStorage.getItem(
+            SAVE_KEY
+        ) || "null"
+    );
+
+
+if(!saveData){
+
+    saveData = {
+
+        coins:0,
+
+        inventory:{
+
+            pistol:true,
+
+            smg:false,
+
+            auto:false,
+
+            bomb:false
+
+        },
+
+        friends:[]
+
+    };
+
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+
+}
+
+
+function save(){
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+
+
+    updateCoins();
+
+    updateShop();
+
+    updateInventory();
+
+}
+
+
+/* =====================================================
+   PEER
+===================================================== */
+
+let peer = null;
+
+let myName = "";
+
+let myId = "";
+
+let connections = {};
+
+let pendingRequests = {};
+
+let lobby = {
+
+    active:false,
+
+    hostId:null,
+
+    players:{}
+
+};
+
+let gameConnection = null;
+
+let isHost = false;
+
+
+/* =====================================================
+   ELEMENTLER
+===================================================== */
+
+const nameInput =
+    document.getElementById(
+        "nameInput"
+    );
+
+const onlineBtn =
+    document.getElementById(
+        "onlineBtn"
+    );
+
+const onlineStatus =
+    document.getElementById(
+        "onlineStatus"
+    );
+
+const profileInfo =
+    document.getElementById(
+        "profileInfo"
+    );
+
+const myNameDisplay =
+    document.getElementById(
+        "myNameDisplay"
+    );
+
+const friendInput =
+    document.getElementById(
+        "friendInput"
+    );
+
+const searchFriendBtn =
+    document.getElementById(
+        "searchFriendBtn"
+    );
+
+const searchResult =
+    document.getElementById(
+        "searchResult"
+    );
+
+const friendsList =
+    document.getElementById(
+        "friendsList"
+    );
+
+const friendRequests =
+    document.getElementById(
+        "friendRequests"
+    );
+
+const lobbyBox =
+    document.getElementById(
+        "lobby"
+    );
+
+const lobbyEmpty =
+    document.getElementById(
+        "lobbyEmpty"
+    );
+
+const lobbyPlayers =
+    document.getElementById(
+        "lobbyPlayers"
+    );
+
+const lobbyStatus =
+    document.getElementById(
+        "lobbyStatus"
+    );
+
+const startLobbyBtn =
+    document.getElementById(
+        "startLobbyBtn"
+    );
+
+
+/* =====================================================
+   İSİM NORMALİZE
+===================================================== */
+
+function normalizeName(
+    name
+){
+
+    return name
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-z0-9]+/g,
+            "-"
+        )
+        .replace(
+            /^-+|-+$/g,
+            ""
+        )
+        .slice(
+            0,
+            24
+        );
+
+}
+
+
+/* =====================================================
+   DURUM
+===================================================== */
+
+function setOnlineStatus(
+    text
+){
+
+    onlineStatus.textContent =
+        text;
+
+}
+
+
+/* =====================================================
+   ONLINE OL
+===================================================== */
+
+onlineBtn.onclick =
+function(){
+
+    const name =
+        nameInput.value.trim();
+
+
+    if(
+        name.length < 2
+    ){
+
+        setOnlineStatus(
+            "En az 2 karakterlik bir kullanıcı adı yaz."
+        );
+
+        return;
+
+    }
+
+
+    myName =
+        name;
+
+    myId =
+        normalizeName(
+            name
+        );
+
+
+    if(!myId){
+
+        setOnlineStatus(
+            "Bu kullanıcı adı kullanılamıyor."
+        );
+
+        return;
+
+    }
+
+
+    if(peer){
+
+        try{
+
+            peer.destroy();
+
+        }catch(e){}
+
+    }
+
+
+    setOnlineStatus(
+        "Sunucuya bağlanılıyor..."
+    );
+
+
+    peer =
+        new Peer(
+            myId,
+            {
+                debug:0
+            }
+        );
+
+
+    peer.on(
+        "open",
+        function(id){
+
+            myId =
+                id;
+
+
+            myNameDisplay.textContent =
+                myName;
+
+
+            profileInfo.classList.remove(
+                "hidden"
+            );
+
+
+            nameInput.disabled =
+                true;
+
+
+            onlineBtn.disabled =
+                true;
+
+
+            setOnlineStatus(
+                "🟢 Çevrimiçi"
+            );
+
+
+            renderFriends();
+
+            renderRequests();
+
+        }
+    );
+
+
+    peer.on(
+        "connection",
+        function(conn){
+
+            setupConnection(
+                conn
+            );
+
+        }
+    );
+
+
+    peer.on(
+        "error",
+        function(err){
+
+            console.log(err);
+
+
+            if(
+                err.type ===
+                "unavailable-id"
+            ){
+
+                setOnlineStatus(
+                    "❌ Bu kullanıcı adı şu anda kullanımda."
+                );
+
+            }else{
+
+                setOnlineStatus(
+                    "❌ Bağlantı hatası: " +
+                    err.type
+                );
+
+            }
+
+
+            nameInput.disabled =
+                false;
+
+
+            onlineBtn.disabled =
+                false;
+
+        }
+    );
+
+};
+
+
+/* =====================================================
+   BAĞLANTI
+===================================================== */
+
+function setupConnection(
+    conn
+){
+
+    if(
+        connections[
+            conn.peer
+        ]
+    ){
+
+        try{
+
+            connections[
+                conn.peer
+            ].close();
+
+        }catch(e){}
+
+    }
+
+
+    connections[
+        conn.peer
+    ] =
+        conn;
+
+
+    conn.on(
+        "open",
+        function(){
+
+            console.log(
+                "Bağlantı açıldı:",
+                conn.peer
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "data",
+        function(data){
+
+            handleNetworkData(
+                conn,
+                data
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "close",
+        function(){
+
+            delete connections[
+                conn.peer
+            ];
+
+
+            removeLobbyPlayer(
+                conn.peer
+            );
+
+        }
+    );
+
+
+    conn.on(
+        "error",
+        function(err){
+
+            console.log(
+                "Bağlantı hatası:",
+                err
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   GÖNDER
+===================================================== */
+
+function sendTo(
+    conn,
+    data
+){
+
+    if(
+        conn &&
+        conn.open
+    ){
+
+        try{
+
+            conn.send(
+                data
+            );
+
+        }catch(e){
+
+            console.log(e);
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   ARKADAŞ ARAMA
+===================================================== */
+
+/*
+   ÖNEMLİ:
+   Artık burada direkt isim gösterilmiyor.
+
+   Önce gerçekten PeerJS bağlantısı deneniyor.
+   Bağlantı açılırsa oyuncu online kabul ediliyor.
+*/
+
+searchFriendBtn.onclick =
+function(){
+
+    const name =
+        friendInput.value.trim();
+
+
+    if(!name){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                Bir kullanıcı adı yaz.
+            </div>`;
+
+        return;
+
+    }
+
+
+    if(!peer){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                ❌ Önce ONLINE OL.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const id =
+        normalizeName(
+            name
+        );
+
+
+    if(
+        id === myId
+    ){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+                ❌ Kendini arkadaş olarak ekleyemezsin.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const already =
+        saveData.friends.some(
+            function(f){
+
+                return f.id === id;
+
+            }
+        );
+
+
+    if(already){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                👥
+                <b>
+                    ${escapeHTML(name)}
+                </b>
+
+                zaten arkadaşların arasında.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    searchResult.innerHTML =
+        `<div class="search-result">
+
+            🔎
+            <b>
+                ${escapeHTML(name)}
+            </b>
+            aranıyor...
+
+        </div>`;
+
+
+    let found = false;
+
+
+    const conn =
+        peer.connect(
+            id,
+            {
+                reliable:true
+            }
+        );
+
+
+    setupConnection(
+        conn
+    );
+
+
+    const timeout =
+        setTimeout(
+            function(){
+
+                if(!found){
+
+                    try{
+
+                        conn.close();
+
+                    }catch(e){}
+
+
+                    searchResult.innerHTML =
+                        `<div class="search-result">
+
+                            ❌
+                            <b>
+                                ${escapeHTML(name)}
+                            </b>
+
+                            bulunamadı veya çevrimdışı.
+
+                        </div>`;
+
+                }
+
+            },
+            5000
+        );
+
+
+    conn.on(
+        "open",
+        function(){
+
+            found =
+                true;
+
+
+            clearTimeout(
+                timeout
+            );
+
+
+            /*
+               Burada artık gerçekten
+               online olduğu kesin.
+            */
+
+            searchResult.innerHTML =
+                `<div class="search-result">
+
+                    <div class="friend-row">
+
+                        <div>
+
+                            <span
+                                class="online-dot">
+                            </span>
+
+                            <span
+                                class="friend-name">
+
+                                ${escapeHTML(name)}
+
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="friend-action"
+                            id="sendRequestButton">
+
+                            İSTEK GÖNDER
+
+                        </button>
+
+                    </div>
+
+                    <div class="small-status">
+
+                        🟢 Şu anda çevrimiçi.
+
+                    </div>
+
+                </div>`;
+
+
+            document
+                .getElementById(
+                    "sendRequestButton"
+                )
+                .onclick =
+                function(){
+
+                    sendTo(
+                        conn,
+                        {
+
+                            type:
+                                "friendRequest",
+
+                            fromName:
+                                myName,
+
+                            fromId:
+                                myId
+
+                        }
+                    );
+
+
+                    searchResult.innerHTML =
+                        `<div class="search-result">
+
+                            📨
+                            <b>
+                                ${escapeHTML(name)}
+                            </b>
+
+                            arkadaşlık isteği gönderildi.
+
+                        </div>`;
+
+                };
+
+        }
+    );
+
+};
+
+
+/* =====================================================
+   NETWORK VERİ
+===================================================== */
+
+function handleNetworkData(
+    conn,
+    data
+){
+
+    if(
+        !data ||
+        !data.type
+    )
+        return;
+
+
+    /* ARKADAŞ İSTEĞİ */
+
+    if(
+        data.type ===
+        "friendRequest"
+    ){
+
+        pendingRequests[
+            data.fromId
+        ] = {
+
+            id:
+                data.fromId,
+
+            name:
+                data.fromName,
+
+            conn:
+                conn
+
+        };
+
+
+        renderRequests();
+
+        return;
+
+    }
+
+
+    /* KABUL */
+
+    if(
+        data.type ===
+        "friendAccepted"
+    ){
+
+        addFriend(
+            data.fromName,
+            data.fromId
+        );
+
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                ✅
+                <b>
+                    ${escapeHTML(
+                        data.fromName
+                    )}
+                </b>
+
+                arkadaşlık isteğini kabul etti.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    /* RED */
+
+    if(
+        data.type ===
+        "friendRejected"
+    ){
+
+        searchResult.innerHTML =
+            `<div class="search-result">
+
+                ❌
+                ${escapeHTML(
+                    data.fromName
+                )}
+                isteği reddetti.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    /* DAVET */
+
+    if(
+        data.type ===
+        "gameInvite"
+    ){
+
+        receiveGameInvite(
+            conn,
+            data
+        );
+
+        return;
+
+    }
+
+
+    /* DAVET KABUL */
+
+    if(
+        data.type ===
+        "inviteAccepted"
+    ){
+
+        createLobby(
+            conn,
+            data.fromName,
+            true
+        );
+
+        return;
+
+    }
+
+
+    /* LOBİ */
+
+    if(
+        data.type ===
+        "lobbyInfo"
+    ){
+
+        lobby.active =
+            true;
+
+
+        lobby.hostId =
+            data.hostId;
+
+
+        lobby.players =
+            data.players || {};
+
+
+        gameConnection =
+            conn;
+
+
+        isHost =
+            myId ===
+            lobby.hostId;
+
+
+        renderLobby();
+
+        return;
+
+    }
+
+
+    /* OYUN BAŞLANGICI */
+
+    if(
+        data.type ===
+        "gameStart"
+    ){
+
+        gameConnection =
+            conn;
+
+
+        isHost =
+            false;
+
+
+        startGame(
+            false
+        );
+
+        return;
+
+    }
+
+
+    /* INPUT */
+
+    if(
+        data.type ===
+        "input"
+    ){
+
+        if(isHost){
+
+            remoteInput =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* ATEŞ */
+
+    if(
+        data.type ===
+        "shoot"
+    ){
+
+        if(isHost){
+
+            remoteShoot =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* BOMBA */
+
+    if(
+        data.type ===
+        "bomb"
+    ){
+
+        if(isHost){
+
+            remoteBomb =
+                data;
+
+        }
+
+        return;
+
+    }
+
+
+    /* STATE */
+
+    if(
+        data.type ===
+        "state"
+    ){
+
+        if(!isHost){
+
+            remote.x =
+                data.x;
+
+            remote.y =
+                data.y;
+
+            remote.hp =
+                data.hp;
+
+            remote.name =
+                data.name;
+
+            local.hp =
+                data.localHp;
+
+            score =
+                data.score;
+
+        }
+
+        return;
+
+    }
+
+}
+
+
+/* =====================================================
+   ARKADAŞ KABUL
+===================================================== */
+
+function acceptRequest(
+    id
+){
+
+    const req =
+        pendingRequests[
+            id
+        ];
+
+
+    if(!req)
+        return;
+
+
+    addFriend(
+        req.name,
+        req.id
+    );
+
+
+    sendTo(
+        req.conn,
+        {
+
+            type:
+                "friendAccepted",
+
+            fromName:
+                myName,
+
+            fromId:
+                myId
+
+        }
+    );
+
+
+    delete pendingRequests[
+        id
+    ];
+
+
+    renderRequests();
+
+    renderFriends();
+
+}
+
+
+/* =====================================================
+   RED
+===================================================== */
+
+function rejectRequest(
+    id
+){
+
+    const req =
+        pendingRequests[
+            id
+        ];
+
+
+    if(!req)
+        return;
+
+
+    sendTo(
+        req.conn,
+        {
+
+            type:
+                "friendRejected",
+
+            fromName:
+                myName
+
+        }
+    );
+
+
+    try{
+
+        req.conn.close();
+
+    }catch(e){}
+
+
+    delete pendingRequests[
+        id
+    ];
+
+
+    renderRequests();
+
+}
+
+
+/* =====================================================
+   ARKADAŞ EKLE
+===================================================== */
+
+function addFriend(
+    name,
+    id
+){
+
+    if(
+        saveData.friends.some(
+            function(f){
+
+                return f.id === id;
+
+            }
+        )
+    ){
+
+        return;
+
+    }
+
+
+    saveData.friends.push({
+
+        name:
+            name,
+
+        id:
+            id
+
+    });
+
+
+    save();
+
+    renderFriends();
+
+}
+
+
+/* =====================================================
+   ARKADAŞ LİSTESİ
+===================================================== */
+
+function renderFriends(){
+
+    friendsList.innerHTML =
+        "";
+
+
+    if(
+        saveData.friends.length === 0
+    ){
+
+        friendsList.innerHTML =
+            `<div
+                class="small-status"
+                style="margin-top:12px;">
+
+                Henüz arkadaşın yok.
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    saveData.friends.forEach(
+        function(friend){
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "friend-item";
+
+
+            div.innerHTML = `
+
+                <div class="friend-row">
+
+                    <div>
+
+                        👤
+
+                        <span
+                            class="friend-name">
+
+                            ${escapeHTML(
+                                friend.name
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="friend-action">
+
+                        DAVET ET
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            div
+                .querySelector(
+                    "button"
+                )
+                .onclick =
+                function(){
+
+                    inviteFriend(
+                        friend
+                    );
+
+                };
+
+
+            friendsList.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   İSTEKLER
+===================================================== */
+
+function renderRequests(){
+
+    friendRequests.innerHTML =
+        "";
+
+
+    const ids =
+        Object.keys(
+            pendingRequests
+        );
+
+
+    if(
+        ids.length === 0
+    ){
+
+        return;
+
+    }
+
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+
+    title.className =
+        "small-status";
+
+
+    title.style.marginTop =
+        "15px";
+
+
+    title.textContent =
+        "📨 Gelen Arkadaşlık İstekleri";
+
+
+    friendRequests.appendChild(
+        title
+    );
+
+
+    ids.forEach(
+        function(id){
+
+            const req =
+                pendingRequests[
+                    id
+                ];
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "request-item";
+
+
+            div.innerHTML = `
+
+                <div>
+
+                    👤
+
+                    <b>
+                        ${escapeHTML(
+                            req.name
+                        )}
+                    </b>
+
+                    sana arkadaşlık isteği gönderdi.
+
+                </div>
+
+
+                <div class="request-actions">
+
+                    <button
+                        class="accept">
+
+                        KABUL ET
+
+                    </button>
+
+
+                    <button
+                        class="reject">
+
+                        REDDET
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            div
+                .querySelector(
+                    ".accept"
+                )
+                .onclick =
+                function(){
+
+                    acceptRequest(
+                        id
+                    );
+
+                };
+
+
+            div
+                .querySelector(
+                    ".reject"
+                )
+                .onclick =
+                function(){
+
+                    rejectRequest(
+                        id
+                    );
+
+                };
+
+
+            friendRequests.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DAVET GÖNDER
+===================================================== */
+
+function inviteFriend(
+    friend
+){
+
+    if(!peer){
+
+        alert(
+            "Önce ONLINE OL."
+        );
+
+        return;
+
+    }
+
+
+    let conn =
+        connections[
+            friend.id
+        ];
+
+
+    if(!conn){
+
+        conn =
+            peer.connect(
+                friend.id,
+                {
+                    reliable:true
+                }
+            );
+
+
+        setupConnection(
+            conn
+        );
+
+    }
+
+
+    const sendInvite =
+        function(){
+
+            sendTo(
+                conn,
+                {
+
+                    type:
+                        "gameInvite",
+
+                    fromId:
+                        myId,
+
+                    fromName:
+                        myName
+
+                }
+            );
+
+
+            createLobby(
+                conn,
+                friend.name,
+                true
+            );
+
+        };
+
+
+    if(
+        conn.open
+    ){
+
+        sendInvite();
+
+    }else{
+
+        conn.on(
+            "open",
+            sendInvite
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DAVET AL
+===================================================== */
+
+function receiveGameInvite(
+    conn,
+    data
+){
+
+    const answer =
+        confirm(
+            data.fromName +
+            " seni oyununa davet ediyor.\n\n" +
+            "Kabul etmek istiyor musun?"
+        );
+
+
+    if(answer){
+
+        sendTo(
+            conn,
+            {
+
+                type:
+                    "inviteAccepted",
+
+                fromName:
+                    myName,
+
+                fromId:
+                    myId
+
+            }
+        );
+
+
+        gameConnection =
+            conn;
+
+
+        createLobby(
+            conn,
+            data.fromName,
+            false
+        );
+
+    }else{
+
+        sendTo(
+            conn,
+            {
+
+                type:
+                    "inviteRejected",
+
+                fromName:
+                    myName
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ
+===================================================== */
+
+function createLobby(
+    conn,
+    friendName,
+    host
+){
+
+    lobby.active =
+        true;
+
+
+    lobby.hostId =
+        host
+        ?
+        myId
+        :
+        conn.peer;
+
+
+    lobby.players =
+        {};
+
+
+    lobby.players[
+        myId
+    ] = {
+
+        id:
+            myId,
+
+        name:
+            myName
+
+    };
+
+
+    lobby.players[
+        conn.peer
+    ] = {
+
+        id:
+            conn.peer,
+
+        name:
+            friendName
+
+    };
+
+
+    gameConnection =
+        conn;
+
+
+    isHost =
+        host;
+
+
+    renderLobby();
+
+
+    if(isHost){
+
+        broadcastLobby();
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ GÖSTER
+===================================================== */
+
+function renderLobby(){
+
+    lobbyEmpty.classList.add(
+        "hidden"
+    );
+
+
+    lobbyBox.classList.remove(
+        "hidden"
+    );
+
+
+    lobbyPlayers.innerHTML =
+        "";
+
+
+    Object.values(
+        lobby.players
+    )
+    .forEach(
+        function(player){
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "lobby-player";
+
+
+            div.innerHTML = `
+
+                <span>
+
+                    👤
+                    ${escapeHTML(
+                        player.name
+                    )}
+
+                </span>
+
+
+                ${
+                    player.id ===
+                    lobby.hostId
+
+                    ?
+
+                    `<span
+                        class="host-badge">
+
+                        👑 ODA SAHİBİ
+
+                    </span>`
+
+                    :
+
+                    ""
+
+                }
+
+            `;
+
+
+            lobbyPlayers.appendChild(
+                div
+            );
+
+        }
+    );
+
+
+    if(isHost){
+
+        lobbyStatus.textContent =
+            "Hazır";
+
+
+        startLobbyBtn.disabled =
+            false;
+
+    }else{
+
+        lobbyStatus.textContent =
+            "Oda sahibinin başlatması bekleniyor.";
+
+
+        startLobbyBtn.disabled =
+            true;
+
+    }
+
+}
+
+
+/* =====================================================
+   LOBİ YAY
+===================================================== */
+
+function broadcastLobby(){
+
+    if(!isHost)
+        return;
+
+
+    sendTo(
+        gameConnection,
+        {
+
+            type:
+                "lobbyInfo",
+
+            hostId:
+                lobby.hostId,
+
+            players:
+                lobby.players
+
+        }
+    );
+
+
+    renderLobby();
+
+}
+
+
+/* =====================================================
+   LOBİ BAŞLAT
+===================================================== */
+
+startLobbyBtn.onclick =
+function(){
+
+    if(!isHost)
+        return;
+
+
+    sendTo(
+        gameConnection,
+        {
+
+            type:
+                "gameStart"
+
+        }
+    );
+
+
+    startGame(
+        true
+    );
+
+};
+
+
+/* =====================================================
+   TEK OYUNCU
+===================================================== */
+
+document
+    .getElementById(
+        "soloBtn"
+    )
+    .onclick =
+    function(){
+
+        gameConnection =
+            null;
+
+
+        isHost =
+            true;
+
+
+        lobby.active =
+            false;
+
+
+        startGame(
+            true
+        );
+
+    };
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+const game =
+    document.getElementById(
+        "game"
+    );
+
+
+const canvas =
+    document.getElementById(
+        "canvas"
+    );
+
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+
+let started =
+    false;
+
+
+let gameOver =
+    false;
+
+
+let score =
+    0;
+
+
+let zombies =
+    [];
+
+
+let bullets =
+    [];
+
+
+let particles =
+    [];
+
+
+let lastTime =
+    0;
+
+
+let zombieTimer =
+    0;
+
+
+let coinRewardTimer =
+    0;
+
+
+/* =====================================================
+   OYUNCULAR
+===================================================== */
+
+let local = {
+
+    x:300,
+
+    y:300,
+
+    hp:100
+
+};
+
+
+let remote = {
+
+    x:-100,
+
+    y:-100,
+
+    hp:100,
+
+    name:"Arkadaş"
+
+};
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+let keys =
+    {};
+
+let mouse = {
+
+    x:0,
+
+    y:0,
+
+    down:false
+
+};
+
+
+let aimAngle =
+    0;
+
+
+let aimActive =
+    false;
+
+
+let moveX =
+    0;
+
+
+let moveY =
+    0;
+
+
+/* =====================================================
+   REMOTE
+===================================================== */
+
+let remoteInput = {
+
+    x:0,
+
+    y:0
+
+};
+
+
+let remoteShoot =
+    null;
+
+
+let remoteBomb =
+    null;
+
+
+/* =====================================================
+   SİLAHLAR
+===================================================== */
+
+const weapons = {
+
+    pistol:{
+
+        name:
+            "Tabanca",
+
+        damage:
+            28,
+
+        fireRate:
+            380,
+
+        speed:
+            9,
+
+        spread:
+            .025,
+
+        pellets:
+            1
+
+    },
+
+
+    smg:{
+
+        name:
+            "Hafif Taramalı",
+
+        damage:
+            12,
+
+        fireRate:
+            100,
+
+        speed:
+            10,
+
+        spread:
+            .09,
+
+        pellets:
+            1
+
+    },
+
+
+    auto:{
+
+        name:
+            "Normal Taramalı",
+
+        damage:
+            20,
+
+        fireRate:
+            145,
+
+        speed:
+            11,
+
+        spread:
+            .055,
+
+        pellets:
+            1
+
+    },
+
+
+    bomb:{
+
+        name:
+            "Bomba",
+
+        damage:
+            85,
+
+        fireRate:
+            900,
+
+        speed:
+            6,
+
+        spread:
+            0,
+
+        pellets:
+            1
+
+    }
+
+};
+
+
+let currentWeapon =
+    "pistol";
+
+
+let lastShot =
+    0;
+
+
+let bombs =
+    0;
+
+
+/* =====================================================
+   ZOMBİ TEMAS SÜRESİ
+===================================================== */
+
+let lastZombieDamage =
+    0;
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+function resize(){
+
+    canvas.width =
+        window.innerWidth;
+
+
+    canvas.height =
+        window.innerHeight;
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+resize();
+
+
+/* =====================================================
+   OYUN BAŞLAT
+===================================================== */
+
+function startGame(
+    host
+){
+
+    isHost =
+        host;
+
+
+    started =
+        true;
+
+
+    gameOver =
+        false;
+
+
+    score =
+        0;
+
+
+    zombies =
+        [];
+
+
+    bullets =
+        [];
+
+
+    particles =
+        [];
+
+
+    zombieTimer =
+        0;
+
+
+    lastZombieDamage =
+        0;
+
+
+    local.x =
+        canvas.width / 2;
+
+
+    local.y =
+        canvas.height / 2;
+
+
+    local.hp =
+        100;
+
+
+    remote.x =
+        canvas.width / 2 +
+        100;
+
+
+    remote.y =
+        canvas.height / 2;
+
+
+    remote.hp =
+        100;
+
+
+    document
+        .getElementById(
+            "menu"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    game.classList.remove(
+        "hidden"
+    );
+
+
+    document
+        .getElementById(
+            "gameMessage"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    updateHUD();
+
+    updateInventory();
+
+
+    if(isHost){
+
+        for(
+            let i=0;
+            i<3;
+            i++
+        ){
+
+            spawnZombie();
+
+        }
+
+    }
+
+
+    lastTime =
+        performance.now();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =====================================================
+   ZOMBİ OLUŞTUR
+===================================================== */
+
+function spawnZombie(){
+
+    const side =
+        Math.floor(
+            Math.random()*4
+        );
+
+
+    let x;
+
+    let y;
+
+
+    if(side === 0){
+
+        x =
+            Math.random() *
+            canvas.width;
+
+        y =
+            -40;
+
+    }
+
+    else if(side === 1){
+
+        x =
+            canvas.width +
+            40;
+
+        y =
+            Math.random() *
+            canvas.height;
+
+    }
+
+    else if(side === 2){
+
+        x =
+            Math.random() *
+            canvas.width;
+
+        y =
+            canvas.height +
+            40;
+
+    }
+
+    else{
+
+        x =
+            -40;
+
+        y =
+            Math.random() *
+            canvas.height;
+
+    }
+
+
+    zombies.push({
+
+        x:
+            x,
+
+        y:
+            y,
+
+        /*
+           Öncekinden biraz daha az can.
+        */
+
+        hp:
+            88,
+
+        /*
+           Biraz daha yavaş.
+        */
+
+        speed:
+            .52 +
+            Math.random()*.30,
+
+        radius:
+            17
+
+    });
+
+}
+
+
+/* =====================================================
+   MERMİ
+===================================================== */
+
+function addBullet(
+    x,
+    y,
+    angle,
+    damage,
+    owner
+){
+
+    bullets.push({
+
+        x:
+            x,
+
+        y:
+            y,
+
+        vx:
+            Math.cos(angle)*11,
+
+        vy:
+            Math.sin(angle)*11,
+
+        damage:
+            damage,
+
+        owner:
+            owner,
+
+        life:
+            80
+
+    });
+
+}
+
+
+/* =====================================================
+   ATEŞ
+===================================================== */
+
+function shoot(
+    angle,
+    owner="local"
+){
+
+    const now =
+        performance.now();
+
+
+    const weapon =
+        weapons[
+            currentWeapon
+        ];
+
+
+    if(
+        now-lastShot <
+        weapon.fireRate
+    ){
+
+        return;
+
+    }
+
+
+    lastShot =
+        now;
+
+
+    if(
+        currentWeapon ===
+        "bomb"
+    ){
+
+        throwBomb(
+            angle,
+            owner
+        );
+
+        return;
+
+    }
+
+
+    for(
+        let i=0;
+        i<weapon.pellets;
+        i++
+    ){
+
+        const spread =
+            (
+                Math.random()-.5
+            ) *
+            weapon.spread;
+
+
+        addBullet(
+
+            owner ===
+            "local"
+            ?
+            local.x
+            :
+            remote.x,
+
+            owner ===
+            "local"
+            ?
+            local.y
+            :
+            remote.y,
+
+            angle+
+            spread,
+
+            weapon.damage,
+
+            owner
+
+        );
+
+    }
+
+
+    if(
+        owner ===
+        "local" &&
+        gameConnection
+    ){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "shoot",
+
+                angle:
+                    angle,
+
+                weapon:
+                    currentWeapon
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BOMBA
+===================================================== */
+
+function throwBomb(
+    angle,
+    owner="local"
+){
+
+    const x =
+        owner ===
+        "local"
+        ?
+        local.x
+        :
+        remote.x;
+
+
+    const y =
+        owner ===
+        "local"
+        ?
+        local.y
+        :
+        remote.y;
+
+
+    bullets.push({
+
+        x:
+            x,
+
+        y:
+            y,
+
+        vx:
+            Math.cos(angle)*6,
+
+        vy:
+            Math.sin(angle)*6,
+
+        damage:
+            85,
+
+        owner:
+            owner,
+
+        bomb:
+            true,
+
+        life:
+            55
+
+    });
+
+
+    if(
+        owner ===
+        "local" &&
+        gameConnection
+    ){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "bomb",
+
+                angle:
+                    angle
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KLAVYE
+===================================================== */
+
+window.addEventListener(
+    "keydown",
+    function(e){
+
+        keys[
+            e.key.toLowerCase()
+        ] = true;
+
+
+        if(
+            e.key >= "1" &&
+            e.key <= "4"
+        ){
+
+            const list = [
+
+                "pistol",
+
+                "smg",
+
+                "auto",
+
+                "bomb"
+
+            ];
+
+
+            const index =
+                Number(
+                    e.key
+                )-1;
+
+
+            selectWeapon(
+                list[index]
+            );
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    function(e){
+
+        keys[
+            e.key.toLowerCase()
+        ] = false;
+
+    }
+);
+
+
+/* =====================================================
+   MOUSE
+===================================================== */
+
+canvas.addEventListener(
+    "mousemove",
+    function(e){
+
+        mouse.x =
+            e.clientX;
+
+
+        mouse.y =
+            e.clientY;
+
+
+        aimAngle =
+            Math.atan2(
+
+                mouse.y -
+                local.y,
+
+                mouse.x -
+                local.x
+
+            );
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousedown",
+    function(e){
+
+        if(
+            e.button === 0
+        ){
+
+            mouse.down =
+                true;
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    function(e){
+
+        if(
+            e.button === 0
+        ){
+
+            mouse.down =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MOBİL HAREKET
+===================================================== */
+
+const moveConsole =
+    document.getElementById(
+        "moveConsole"
+    );
+
+
+const moveStick =
+    document.getElementById(
+        "moveStick"
+    );
+
+
+const aimConsole =
+    document.getElementById(
+        "aimConsole"
+    );
+
+
+const aimReticle =
+    document.getElementById(
+        "aimReticle"
+    );
+
+
+let movePointer =
+    null;
+
+
+let aimPointer =
+    null;
+
+
+function joystickPosition(
+    event,
+    element
+){
+
+    const rect =
+        element.getBoundingClientRect();
+
+
+    let dx =
+        event.clientX -
+        (
+            rect.left +
+            rect.width/2
+        );
+
+
+    let dy =
+        event.clientY -
+        (
+            rect.top +
+            rect.height/2
+        );
+
+
+    const max =
+        rect.width/2 -
+        34;
+
+
+    const distance =
+        Math.hypot(
+            dx,
+            dy
+        );
+
+
+    if(
+        distance > max
+    ){
+
+        dx =
+            dx/distance*
+            max;
+
+
+        dy =
+            dy/distance*
+            max;
+
+    }
+
+
+    return {
+
+        dx:
+            dx,
+
+        dy:
+            dy,
+
+        nx:
+            dx/max,
+
+        ny:
+            dy/max
+
+    };
+
+}
+
+
+/* =====================================================
+   SOL JOYSTICK
+===================================================== */
+
+moveConsole.addEventListener(
+    "pointerdown",
+    function(e){
+
+        e.preventDefault();
+
+
+        movePointer =
+            e.pointerId;
+
+
+        moveConsole.setPointerCapture(
+            e.pointerId
+        );
+
+
+        updateMove(
+            e
+        );
+
+    }
+);
+
+
+moveConsole.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(
+            e.pointerId !==
+            movePointer
+        )
+            return;
+
+
+        updateMove(
+            e
+        );
+
+    }
+);
+
+
+moveConsole.addEventListener(
+    "pointerup",
+    resetMove
+);
+
+
+moveConsole.addEventListener(
+    "pointercancel",
+    resetMove
+);
+
+
+function updateMove(
+    e
+){
+
+    const p =
+        joystickPosition(
+            e,
+            moveConsole
+        );
+
+
+    moveX =
+        p.nx;
+
+
+    moveY =
+        p.ny;
+
+
+    moveStick.style.transform =
+        `translate(
+            calc(-50% + ${p.dx}px),
+            calc(-50% + ${p.dy}px)
+        )`;
+
+}
+
+
+function resetMove(){
+
+    movePointer =
+        null;
+
+
+    moveX =
+        0;
+
+
+    moveY =
+        0;
+
+
+    moveStick.style.transform =
+        "translate(-50%,-50%)";
+
+}
+
+
+/* =====================================================
+   SAĞ NİŞAN
+===================================================== */
+
+aimConsole.addEventListener(
+    "pointerdown",
+    function(e){
+
+        e.preventDefault();
+
+
+        aimPointer =
+            e.pointerId;
+
+
+        aimConsole.setPointerCapture(
+            e.pointerId
+        );
+
+
+        aimActive =
+            true;
+
+
+        updateAim(
+            e
+        );
+
+    }
+);
+
+
+aimConsole.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(
+            e.pointerId !==
+            aimPointer
+        )
+            return;
+
+
+        updateAim(
+            e
+        );
+
+    }
+);
+
+
+aimConsole.addEventListener(
+    "pointerup",
+    resetAim
+);
+
+
+aimConsole.addEventListener(
+    "pointercancel",
+    resetAim
+);
+
+
+function updateAim(
+    e
+){
+
+    const p =
+        joystickPosition(
+            e,
+            aimConsole
+        );
+
+
+    if(
+        Math.hypot(
+            p.nx,
+            p.ny
+        ) > .12
+    ){
+
+        aimAngle =
+            Math.atan2(
+                p.ny,
+                p.nx
+            );
+
+    }
+
+
+    aimReticle.style.transform =
+        `translate(
+            calc(-50% + ${p.dx}px),
+            calc(-50% + ${p.dy}px)
+        )`;
+
+}
+
+
+function resetAim(){
+
+    aimPointer =
+        null;
+
+
+    aimActive =
+        false;
+
+
+    aimReticle.style.transform =
+        "translate(-50%,-50%)";
+
+}
+
+
+/* =====================================================
+   OYUN GÜNCELLE
+===================================================== */
+
+function update(
+    dt
+){
+
+    if(gameOver)
+        return;
+
+
+    let mx =
+        0;
+
+
+    let my =
+        0;
+
+
+    if(
+        keys["w"] ||
+        keys["arrowup"]
+    )
+        my -= 1;
+
+
+    if(
+        keys["s"] ||
+        keys["arrowdown"]
+    )
+        my += 1;
+
+
+    if(
+        keys["a"] ||
+        keys["arrowleft"]
+    )
+        mx -= 1;
+
+
+    if(
+        keys["d"] ||
+        keys["arrowright"]
+    )
+        mx += 1;
+
+
+    if(
+        Math.abs(moveX) > .05 ||
+        Math.abs(moveY) > .05
+    ){
+
+        mx =
+            moveX;
+
+
+        my =
+            moveY;
+
+    }
+
+
+    const len =
+        Math.hypot(
+            mx,
+            my
+        );
+
+
+    if(
+        len > 0
+    ){
+
+        mx /=
+            len;
+
+
+        my /=
+            len;
+
+
+        local.x +=
+            mx*3.2;
+
+
+        local.y +=
+            my*3.2;
+
+    }
+
+
+    local.x =
+        Math.max(
+            20,
+            Math.min(
+                canvas.width-20,
+                local.x
+            )
+        );
+
+
+    local.y =
+        Math.max(
+            20,
+            Math.min(
+                canvas.height-20,
+                local.y
+            )
+        );
+
+
+    /* ATEŞ */
+
+    if(
+        mouse.down ||
+        aimActive
+    ){
+
+        shoot(
+            aimAngle,
+            "local"
+        );
+
+    }
+
+
+    /* HOST */
+
+    if(isHost){
+
+        zombieTimer +=
+            dt;
+
+
+        if(
+            zombieTimer >
+            1400
+        ){
+
+            zombieTimer =
+                0;
+
+
+            spawnZombie();
+
+        }
+
+
+        updateZombies();
+
+    }
+
+
+    updateBullets();
+
+    updateParticles();
+
+
+    if(
+        gameConnection
+    ){
+
+        sendState();
+
+    }
+
+
+    updateHUD();
+
+}
+
+
+/* =====================================================
+   ZOMBİ GÜNCELLE
+===================================================== */
+
+function updateZombies(){
+
+    for(
+        let i=
+            zombies.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const z =
+            zombies[i];
+
+
+        const dx =
+            local.x -
+            z.x;
+
+
+        const dy =
+            local.y -
+            z.y;
+
+
+        const dist =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        if(
+            dist > 1
+        ){
+
+            z.x +=
+                dx/dist*
+                z.speed;
+
+
+            z.y +=
+                dy/dist*
+                z.speed;
+
+        }
+
+
+        /*
+           ZOMBİ BİZE DEĞERSE
+
+           Artık her frame can
+           azaltmıyoruz.
+
+           220 ms'de bir hasar veriyoruz.
+           Böylece temas ettiğinde can
+           belirgin şekilde hızlı azalıyor
+           ama anında ölmüyoruz.
+        */
+
+        if(
+            dist <
+            z.radius+16
+        ){
+
+            const now =
+                performance.now();
+
+
+            if(
+                now -
+                lastZombieDamage >
+                220
+            ){
+
+                local.hp -=
+                    7;
+
+
+                lastZombieDamage =
+                    now;
+
+
+                createParticles(
+                    local.x,
+                    local.y
+                );
+
+
+                if(
+                    local.hp <= 0
+                ){
+
+                    local.hp =
+                        0;
+
+
+                    die();
+
+                }
+
+            }
+
+        }
+
+
+        /*
+           ZOMBİ ÖLDÜ
+        */
+
+        if(
+            z.hp <= 0
+        ){
+
+            zombies.splice(
+                i,
+                1
+            );
+
+
+            score++;
+
+
+            /*
+               ARTIK HER ZOMBİ 1 JETON
+            */
+
+            saveData.coins +=
+                1;
+
+
+            save();
+
+
+            createParticles(
+                z.x,
+                z.y
+            );
+
+        }
+
+    }
+
+
+    /*
+       Arkadaşa temas
+    */
+
+    if(
+        gameConnection &&
+        remote.hp > 0
+    ){
+
+        for(
+            const z of zombies
+        ){
+
+            const dx =
+                remote.x -
+                z.x;
+
+
+            const dy =
+                remote.y -
+                z.y;
+
+
+            const dist =
+                Math.hypot(
+                    dx,
+                    dy
+                );
+
+
+            if(
+                dist <
+                z.radius+16
+            ){
+
+                remote.hp -=
+                    .04;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MERMİLER
+===================================================== */
+
+function updateBullets(){
+
+    for(
+        let i=
+            bullets.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const b =
+            bullets[i];
+
+
+        b.x +=
+            b.vx;
+
+
+        b.y +=
+            b.vy;
+
+
+        b.life--;
+
+
+        if(
+            b.bomb
+        ){
+
+            if(
+                b.life <= 0
+            ){
+
+                explodeBomb(
+                    b.x,
+                    b.y,
+                    b.damage
+                );
+
+
+                bullets.splice(
+                    i,
+                    1
+                );
+
+            }
+
+
+            continue;
+
+        }
+
+
+        if(
+            b.owner ===
+            "local"
+        ){
+
+            for(
+                const z of zombies
+            ){
+
+                if(
+                    Math.hypot(
+                        b.x-z.x,
+                        b.y-z.y
+                    ) < 20
+                ){
+
+                    z.hp -=
+                        b.damage;
+
+
+                    b.life =
+                        0;
+
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        if(
+            b.owner ===
+            "remote"
+        ){
+
+            for(
+                const z of zombies
+            ){
+
+                if(
+                    Math.hypot(
+                        b.x-z.x,
+                        b.y-z.y
+                    ) < 20
+                ){
+
+                    z.hp -=
+                        b.damage;
+
+
+                    b.life =
+                        0;
+
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        if(
+            b.life <= 0 ||
+            b.x < -100 ||
+            b.x >
+                canvas.width+100 ||
+            b.y < -100 ||
+            b.y >
+                canvas.height+100
+        ){
+
+            bullets.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   BOMBA PATLAMA
+===================================================== */
+
+function explodeBomb(
+    x,
+    y,
+    damage
+){
+
+    for(
+        const z of zombies
+    ){
+
+        const dist =
+            Math.hypot(
+                z.x-x,
+                z.y-y
+            );
+
+
+        if(
+            dist < 130
+        ){
+
+            z.hp -=
+                damage*
+                (
+                    1 -
+                    dist/130
+                );
+
+        }
+
+    }
+
+
+    createParticles(
+        x,
+        y,
+        true
+    );
+
+}
+
+
+/* =====================================================
+   PARÇACIK
+===================================================== */
+
+function createParticles(
+    x,
+    y,
+    big=false
+){
+
+    const amount =
+        big
+        ?
+        25
+        :
+        8;
+
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        particles.push({
+
+            x:
+                x,
+
+            y:
+                y,
+
+            vx:
+                (
+                    Math.random()-.5
+                )*4,
+
+            vy:
+                (
+                    Math.random()-.5
+                )*4,
+
+            life:
+                30+
+                Math.random()*25
+
+        });
+
+    }
+
+}
+
+
+function updateParticles(){
+
+    for(
+        let i=
+            particles.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const p =
+            particles[i];
+
+
+        p.x +=
+            p.vx;
+
+
+        p.y +=
+            p.vy;
+
+
+        p.life--;
+
+
+        if(
+            p.life <= 0
+        ){
+
+            particles.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let lastStateSend =
+    0;
+
+
+function sendState(){
+
+    const now =
+        performance.now();
+
+
+    if(
+        now -
+        lastStateSend <
+        70
+    )
+        return;
+
+
+    lastStateSend =
+        now;
+
+
+    if(isHost){
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "state",
+
+                x:
+                    local.x,
+
+                y:
+                    local.y,
+
+                hp:
+                    local.hp,
+
+                name:
+                    myName,
+
+                localHp:
+                    remote.hp,
+
+                score:
+                    score
+
+            }
+        );
+
+    }else{
+
+        sendTo(
+            gameConnection,
+            {
+
+                type:
+                    "input",
+
+                x:
+                    local.x,
+
+                y:
+                    local.y
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ÇİZ
+===================================================== */
+
+function draw(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.fillStyle =
+        "#111820";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        "rgba(255,255,255,.035)";
+
+
+    ctx.lineWidth =
+        1;
+
+
+    const grid =
+        45;
+
+
+    for(
+        let x=0;
+        x<canvas.width;
+        x+=grid
+    ){
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+
+        ctx.lineTo(
+            x,
+            canvas.height
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+    for(
+        let y=0;
+        y<canvas.height;
+        y+=grid
+    ){
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+
+        ctx.lineTo(
+            canvas.width,
+            y
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+    zombies.forEach(
+        drawZombie
+    );
+
+
+    bullets.forEach(
+        drawBullet
+    );
+
+
+    particles.forEach(
+        function(p){
+
+            ctx.fillStyle =
+                "rgba(255,212,59,.8)";
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+                p.x,
+                p.y,
+                3,
+                0,
+                Math.PI*2
+            );
+
+
+            ctx.fill();
+
+        }
+    );
+
+
+    if(
+        gameConnection &&
+        remote.x > -50
+    ){
+
+        drawPlayer(
+            remote.x,
+            remote.y,
+            "#3867d6",
+            remote.name
+        );
+
+    }
+
+
+    drawPlayer(
+        local.x,
+        local.y,
+        "#20bf6b",
+        myName
+    );
+
+
+    /*
+       NİŞAN ÇİZGİSİ
+    */
+
+    if(
+        started &&
+        !gameOver
+    ){
+
+        const length =
+            75;
+
+
+        const tx =
+            local.x +
+            Math.cos(
+                aimAngle
+            ) *
+            length;
+
+
+        const ty =
+            local.y +
+            Math.sin(
+                aimAngle
+            ) *
+            length;
+
+
+        ctx.save();
+
+
+        ctx.strokeStyle =
+            "rgba(255,71,87,.75)";
+
+
+        ctx.lineWidth =
+            2;
+
+
+        ctx.setLineDash([
+            5,
+            5
+        ]);
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            local.x,
+            local.y
+        );
+
+
+        ctx.lineTo(
+            tx,
+            ty
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.setLineDash([]);
+
+
+        ctx.strokeStyle =
+            "#ff4757";
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+            tx,
+            ty,
+            8,
+            0,
+            Math.PI*2
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            tx-12,
+            ty
+        );
+
+
+        ctx.lineTo(
+            tx+12,
+            ty
+        );
+
+
+        ctx.moveTo(
+            tx,
+            ty-12
+        );
+
+
+        ctx.lineTo(
+            tx,
+            ty+12
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.restore();
+
+    }
+
+}
+
+
+/* =====================================================
+   OYUNCU ÇİZ
+===================================================== */
+
+function drawPlayer(
+    x,
+    y,
+    color,
+    name
+){
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.3)";
+
+
+    ctx.beginPath();
+
+
+    ctx.ellipse(
+        x,
+        y+13,
+        18,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        color;
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        17,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#111820";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x-6,
+        y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.arc(
+        x+6,
+        y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "white";
+
+
+    ctx.font =
+        "12px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+        name,
+        x,
+        y-25
+    );
+
+}
+
+
+/* =====================================================
+   ZOMBİ ÇİZ
+===================================================== */
+
+function drawZombie(
+    z
+){
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.35)";
+
+
+    ctx.beginPath();
+
+
+    ctx.ellipse(
+        z.x,
+        z.y+13,
+        19,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#6ab04c";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        z.x,
+        z.y,
+        17,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#111";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        z.x-6,
+        z.y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.arc(
+        z.x+6,
+        z.y-3,
+        3,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    /* CAN BAR */
+
+    ctx.fillStyle =
+        "#303943";
+
+
+    ctx.fillRect(
+        z.x-20,
+        z.y-27,
+        40,
+        5
+    );
+
+
+    ctx.fillStyle =
+        "#20bf6b";
+
+
+    ctx.fillRect(
+        z.x-20,
+        z.y-27,
+        40 *
+        Math.max(
+            0,
+            z.hp/88
+        ),
+        5
+    );
+
+}
+
+
+/* =====================================================
+   MERMİ ÇİZ
+===================================================== */
+
+function drawBullet(
+    b
+){
+
+    ctx.fillStyle =
+        b.bomb
+        ?
+        "#ffd43b"
+        :
+        "#fff";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        b.x,
+        b.y,
+        b.bomb
+        ?
+        7
+        :
+        4,
+        0,
+        Math.PI*2
+    );
+
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   ÖLÜM
+===================================================== */
+
+function die(){
+
+    if(gameOver)
+        return;
+
+
+    gameOver =
+        true;
+
+
+    document
+        .getElementById(
+            "messageTitle"
+        )
+        .textContent =
+        "OYUN BİTTİ";
+
+
+    document
+        .getElementById(
+            "messageText"
+        )
+        .textContent =
+        "Skorun: " +
+        score +
+        " • Kazandığın jeton: " +
+        score;
+
+
+    document
+        .getElementById(
+            "gameMessage"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+}
+
+
+/* =====================================================
+   ANA MENÜ
+===================================================== */
+
+document
+    .getElementById(
+        "backMenuBtn"
+    )
+    .onclick =
+    function(){
+
+        started =
+            false;
+
+
+        gameOver =
+            false;
+
+
+        game.classList.add(
+            "hidden"
+        );
+
+
+        document
+            .getElementById(
+                "menu"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+
+        updateCoins();
+
+    };
+
+
+/* =====================================================
+   HUD
+===================================================== */
+
+function updateHUD(){
+
+    document
+        .getElementById(
+            "hpText"
+        )
+        .textContent =
+        Math.max(
+            0,
+            Math.floor(
+                local.hp
+            )
+        );
+
+
+    document
+        .getElementById(
+            "hpFill"
+        )
+        .style.width =
+        Math.max(
+            0,
+            local.hp
+        ) +
+        "%";
+
+
+    document
+        .getElementById(
+            "scoreText"
+        )
+        .textContent =
+        score;
+
+
+    document
+        .getElementById(
+            "weaponText"
+        )
+        .textContent =
+        weapons[
+            currentWeapon
+        ].name;
+
+
+    document
+        .getElementById(
+            "gameCoinText"
+        )
+        .textContent =
+        saveData.coins;
+
+}
+
+
+/* =====================================================
+   ENVANTER
+===================================================== */
+
+function updateInventory(){
+
+    document
+        .querySelectorAll(
+            ".weapon-slot"
+        )
+        .forEach(
+            function(slot){
+
+                const weapon =
+                    slot.dataset.weapon;
+
+
+                if(
+                    saveData.inventory[
+                        weapon
+                    ]
+                ){
+
+                    slot.classList.remove(
+                        "hidden"
+                    );
+
+                }else{
+
+                    slot.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+
+                if(
+                    weapon ===
+                    currentWeapon
+                ){
+
+                    slot.classList.add(
+                        "active"
+                    );
+
+                }else{
+
+                    slot.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+
+document
+    .querySelectorAll(
+        ".weapon-slot"
+    )
+    .forEach(
+        function(slot){
+
+            slot.onclick =
+            function(){
+
+                selectWeapon(
+                    slot.dataset.weapon
+                );
+
+            };
+
+        }
+    );
+
+
+function selectWeapon(
+    weapon
+){
+
+    if(
+        !saveData.inventory[
+            weapon
+        ]
+    ){
+
+        return;
+
+    }
+
+
+    currentWeapon =
+        weapon;
+
+
+    updateInventory();
+
+    updateHUD();
+
+}
+
+
+/* =====================================================
+   JETON GÖSTER
+===================================================== */
+
+function updateCoins(){
+
+    document
+        .getElementById(
+            "coinDisplay"
+        )
+        .textContent =
+        saveData.coins;
+
+
+    document
+        .getElementById(
+            "topCoinDisplay"
+        )
+        .textContent =
+        saveData.coins;
+
+}
+
+
+/* =====================================================
+   DÜKKAN
+===================================================== */
+
+const shopPrices = {
+
+    smg:
+        150,
+
+    auto:
+        350,
+
+    bomb:
+        450
+
+};
+
+
+function buyWeapon(
+    weapon
+){
+
+    const price =
+        shopPrices[
+            weapon
+        ];
+
+
+    const status =
+        document
+            .getElementById(
+                "shopStatus"
+            );
+
+
+    if(
+        saveData.inventory[
+            weapon
+        ]
+    ){
+
+        status.textContent =
+            "Bu ürüne zaten sahipsin.";
+
+        return;
+
+    }
+
+
+    if(
+        saveData.coins <
+        price
+    ){
+
+        status.textContent =
+            "❌ Yeterli jetonun yok.";
+
+        return;
+
+    }
+
+
+    saveData.coins -=
+        price;
+
+
+    saveData.inventory[
+        weapon
+    ] =
+        true;
+
+
+    if(
+        weapon ===
+        "bomb"
+    ){
+
+        bombs =
+            5;
+
+    }
+
+
+    save();
+
+
+    status.textContent =
+        "✅ " +
+        weapons[
+            weapon
+        ].name +
+        " satın alındı!";
+
+
+    updateInventory();
+
+}
+
+
+document
+    .getElementById(
+        "buySmgBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "smg"
+        );
+
+    };
+
+
+document
+    .getElementById(
+        "buyAutoBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "auto"
+        );
+
+    };
+
+
+document
+    .getElementById(
+        "buyBombBtn"
+    )
+    .onclick =
+    function(){
+
+        buyWeapon(
+            "bomb"
+        );
+
+    };
+
+
+function updateShop(){
+
+    const map = {
+
+        smg:
+            "buySmgBtn",
+
+        auto:
+            "buyAutoBtn",
+
+        bomb:
+            "buyBombBtn"
+
+    };
+
+
+    Object.keys(
+        map
+    )
+    .forEach(
+        function(weapon){
+
+            const btn =
+                document.getElementById(
+                    map[weapon]
+                );
+
+
+            if(
+                saveData.inventory[
+                    weapon
+                ]
+            ){
+
+                btn.textContent =
+                    "SAHİPSİN";
+
+
+                btn.disabled =
+                    true;
+
+
+                btn.classList.remove(
+                    "gold"
+                );
+
+
+                btn.classList.add(
+                    "dark"
+                );
+
+            }else{
+
+                btn.textContent =
+                    "SATIN AL";
+
+
+                btn.disabled =
+                    false;
+
+
+                btn.classList.add(
+                    "gold"
+                );
+
+
+                btn.classList.remove(
+                    "dark"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   LOBİ OYUNCU ÇIKTI
+===================================================== */
+
+function removeLobbyPlayer(
+    id
+){
+
+    if(
+        lobby.players[id]
+    ){
+
+        delete lobby.players[
+            id
+        ];
+
+
+        renderLobby();
+
+    }
+
+}
+
+
+/* =====================================================
+   HTML GÜVENLİĞİ
+===================================================== */
+
+function escapeHTML(
+    text
+){
+
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   OYUN DÖNGÜSÜ
+===================================================== */
+
+function loop(
+    time
+){
+
+    if(!started)
+        return;
+
+
+    const dt =
+        Math.min(
+            50,
+            time-lastTime
+        );
+
+
+    lastTime =
+        time;
+
+
+    update(
+        dt
+    );
+
+
+    draw();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =====================================================
+   BAŞLANGIÇ
+===================================================== */
+
+updateCoins();
+
+updateShop();
+
+updateInventory();
+
+renderFriends();
+
+</script>
+
+</body>
+</html>
