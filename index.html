@@ -668,4 +668,57 @@ function renderC(){
   if(yontem==="adres"){
     h+='<select id="mah" class="inp" onchange="setM(this.value)"><option value="">Mahalle seçin * (Bahçelievler / İstanbul)</option>'+
       mahalleler.map((x,i)=>'<option value="'+i+'"'+(mah===String(i)?' selected':'')+'>'+x.ad+' Mahallesi</option>').join("")+
-      '<option value="diger"'+(mah==="diger"?' selected':'')+'>Diğ
+      '<option value="diger"'+(mah==="diger"?' selected':'')+'>Diğer (listede yok)</option></select>';
+    if(disi){
+      h+='<div class="blok"><div class="bt">Üzgünüz, şu anda adresinize kendi paket servisimizle teslimat yapamıyoruz. Dilerseniz siparişinizi Gel-Al olarak oluşturabilirsiniz.</div>'+
+        '<button class="gelbig" onclick="setY(\'gel\')">🛍️ Gel-Al Siparişi Oluştur</button>'+
+        (TRENDYOL_LINK?'<a class="tgo" href="'+TRENDYOL_LINK+'" target="_blank" rel="noopener">Trendyol GO\'da Kontrol Et</a><div class="tnot">Bölgenize hizmet verilip verilmediğini Trendyol GO\'da kontrol edebilirsiniz.</div>':'')+'</div>';
+    }else{
+      h+='<textarea id="adres" class="inp" rows="3" placeholder="Açık adres * (sokak, bina no, daire no, tarif)" oninput="adres=this.value">'+esc(adres)+'</textarea>';
+    }
+  }else{
+    h+='<div class="gelinfo">🛍️ Siparişinizi dükkândan teslim alacaksınız. Mahalle ve adres gerekmez.</div>';
+  }
+  const u=ucret();
+  h+='<textarea id="not" class="inp" rows="2" placeholder="Sipariş notu (isteğe bağlı)" oninput="not=this.value">'+esc(not)+'</textarea>'+
+   '<div class="row"><span>Ürünlerin toplamı</span><span>'+TL(toplam())+'</span></div>'+
+   '<div class="row"><span>Teslimat ücreti</span><span>'+(yontem==="gel"?'Gel-Al · Ücretsiz':(u?TL(u):'Ücretsiz'))+'</span></div>'+
+   '<div class="tot"><span>Genel toplam</span><span>'+TL(genel())+'</span></div>';
+  if(yontem==="adres"&&!disi){
+    h+='<div class="fino">🛵 400 TL ve üzeri siparişlerde ücretsiz teslimat!'+(toplam()<UCRETSIZ_LIMIT?' <b>'+TL(UCRETSIZ_LIMIT-toplam())+'</b> daha ekleyin.':' 🎉 Ücretsiz teslimat kazandınız.')+'</div>';
+  }
+  h+=(hata?'<div class="hata" id="hata">'+esc(hata)+'</div>':'')+
+   '<button class="wa'+(disi?' off':'')+'" onclick="siparisGonder()">🟢 WhatsApp ile Sipariş Ver</button></div>';
+  c.innerHTML=h;
+  if(old)c.querySelector('.sbody').scrollTop=st;
+}
+/* ===== MALZEME / SOS STOK ===== */
+document.head.insertAdjacentHTML("beforeend","<style>.exout{opacity:.45}.exout .exf{color:#c00;font-weight:700}</style>");
+exRow=function(e,i){
+  const out=tukenler.has(norm(e[0]));
+  return '<div class="ex'+(out?' exout':'')+'"><div><div class="exn">'+e[0]+'</div><div class="exf">'+(out?'Tükendi':(e[1]?'+'+TL(e[1]):'Ücretsiz'))+'</div></div>'+
+    (out?'':'<div class="qty"><button onclick="exD('+i+',-1)">−</button><span id="ex'+i+'">'+(curEx[i]||0)+'</span><button class="p" onclick="exD('+i+',1)">+</button></div>')+'</div>';
+};
+const _sg=siparisGonder;
+siparisGonder=async function(){
+  const biten=[];
+  sepet.forEach(s=>{
+    const w=waffleler.find(x=>x.id===s.id);
+    if(w&&yok(w))biten.push(s.isim);
+    (s.ekstralar||[]).forEach(e=>{if(tukenler.has(norm(e.isim))&&!biten.includes(e.isim))biten.push(e.isim)});
+  });
+  if(biten.length){
+    hata="Sepetinizdeki şu ürün/malzeme tükendi: "+biten.join(", ")+". Lütfen sepetten kaldırın.";
+    renderC();
+    const h=document.getElementById("hata");if(h)h.scrollIntoView({block:"center"});
+    return;
+  }
+  return _sg();
+};
+buildChips();
+draw();
+upBar();
+stokYukle();
+</script>
+</body>
+</html>
