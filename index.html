@@ -1,217 +1,357 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Yusuf Keder | Finans Merkezi</title>
-<style>
-:root{--p:#6d28d9;--pl:#ede9fe;--bg:#f7f5fb;--c:#fff;--t:#1f1b2e;--m:#6b6880;--g:#15803d;--r:#b91c1c;--b:#e6e2f0}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--t);padding-bottom:90px}
-header{position:sticky;top:0;background:var(--c);border-bottom:1px solid var(--b);padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;z-index:5}
-h1{font-size:17px;margin:0 0 8px;color:var(--p)}main{max-width:760px;margin:0 auto;padding:14px}
-.tabs{display:flex;gap:6px}.tabs button{flex:1;padding:9px;border:1px solid var(--b);background:var(--c);border-radius:10px;font-size:14px}
-.tabs .on{background:var(--p);color:#fff;border-color:var(--p)}
-.card{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:14px;margin-bottom:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.k{font-size:12px;color:var(--m)}.v{font-size:19px;font-weight:700}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.split .card{margin:0}.income{border-top:4px solid var(--g)}.expense{border-top:4px solid var(--r)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--b)}.row:last-child{border:0}
-.pos{color:var(--g)}.neg{color:var(--r)}.s{font-size:12px;color:var(--m)}h3{margin:0 0 8px;font-size:15px}
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--c);border-top:1px solid var(--b);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
-nav button{flex:1;padding:12px 2px;border:0;background:none;font-size:11px;color:var(--m)}nav .on{color:var(--p);font-weight:700}
-.fab{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom));background:var(--p);color:#fff;border:0;border-radius:28px;padding:15px 20px;font-size:16px;font-weight:700;box-shadow:0 6px 18px #6d28d96b;z-index:6}
-input,select,button.b{font:inherit}input,select{width:100%;padding:12px;border:1px solid var(--b);border-radius:10px;margin:4px 0 10px;background:#fff}
-label{font-size:12px;color:var(--m)}button.b{padding:12px 16px;border:0;border-radius:10px;background:var(--p);color:#fff;font-weight:600}
-button.o{background:var(--pl);color:var(--p)}button.d{background:#fee2e2;color:var(--r)}
-.mod{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--c);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
-#toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#1f1b2e;color:#fff;padding:10px 16px;border-radius:10px;z-index:30;font-size:14px;display:none}
-.warn{background:#fef3c7;color:#92400e;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
-.accountbar{background:#f8f7ff;border:1px solid var(--b);border-radius:10px;padding:10px;margin-bottom:10px}.accountbar input{display:inline-block;width:32%;margin:8px 5px 0 0;padding:8px}.accountbar button{margin-top:8px}
-/* --- komut kutusu / yeni alanlar --- */
-.chips{display:flex;gap:6px;margin-bottom:6px}.chips button{flex:1;padding:7px;border:1px solid var(--b);background:var(--c);border-radius:10px;font-size:13px}
-.chips .on{background:var(--pl);color:var(--p);border-color:var(--p);font-weight:700}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.mini{background:#f8f7ff;border:1px solid var(--b);border-radius:10px;padding:8px}.mini .v{font-size:15px}
-.bar{height:6px;background:var(--pl);border-radius:6px;margin:6px 0;overflow:hidden}.bar i{display:block;height:100%;background:var(--p)}
-.sg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.sg button{padding:7px 12px;border:1px solid var(--b);background:var(--pl);color:var(--p);border-radius:16px;font-size:14px}
-.tag{display:inline-block;font-size:11px;background:var(--pl);color:var(--p);border-radius:6px;padding:1px 6px;margin-right:4px}
-details summary{cursor:pointer}
-</style></head><body>
-<div id="toast"></div><div id="app"></div>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paket Servis Net Ciro Takibi</title>
+<!-- Supabase JS SDK (yüklenemezse otomatik olarak REST API kullanılır) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#16121a; --surface:#201a26; --surface2:#2a2231; --line:#3a3043;
+  --text:#f3ecf6; --muted:#a99db3; --gold:#f2b84b; --good:#7bd88f; --bad:#ff7a7a;
+  --ty:#ff6a2b; --ys:#fa2d6c;
+  --font:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;padding:20px 16px 60px}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.05rem;margin:0 0 14px}
+.sub{color:var(--muted);margin:0 0 22px}
+.grid{display:grid;gap:14px}
+.cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:22px}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-bottom:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card:empty{display:none}
+.cards:not(:has(.card:not(:empty))){display:none}
+.period{color:var(--muted);font-size:.9rem;margin-bottom:10px}
+.big{font-size:1.9rem;font-weight:700;color:var(--gold);letter-spacing:-.5px}
+.lbl{color:var(--muted);font-size:.82rem}
+.row{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.brut{margin:8px 0 12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.brut b{font-size:1.1rem}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.ty{background:var(--ty)} .ys{background:var(--ys)}
+label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 16px}
+.primary{background:var(--gold);color:#241a05;font-weight:700;width:100%;margin-top:14px}
+.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.del{background:transparent;color:var(--bad);border:1px solid var(--bad);padding:5px 10px;font-size:.85rem}
+.preview{margin-top:14px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px}
+.preview .net{display:flex;justify-content:space-between;font-weight:700;color:var(--good);border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.rates h3{margin:12px 0 0;font-size:.95rem}
+#msg{position:sticky;top:10px;z-index:5;margin-bottom:16px;padding:12px 14px;border-radius:10px;display:none;font-weight:600}
+#msg.ok{display:block;background:#18341f;border:1px solid var(--good);color:var(--good)}
+#msg.err{display:block;background:#3b1b1b;border:1px solid var(--bad);color:var(--bad)}
+#msg.info{display:block;background:var(--surface2);border:1px solid var(--line);color:var(--text)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th{color:var(--muted);font-weight:600;font-size:.85rem}
+td.net{color:var(--good);font-weight:600}
+td.ded{color:var(--bad)}
+.empty{color:var(--muted);text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Paket Servis Net Ciro Takibi</h1>
+  <p class="sub">Trendyol Go ve Yemeksepeti satışlarının kesintilerden sonra cebinize kalan tutarı.</p>
+
+  <div id="msg" role="status" aria-live="polite"></div>
+
+  <!-- Özet kartları -->
+  <div class="grid cards">
+    <div class="card" id="c-gun"></div>
+    <div class="card" id="c-hafta"></div>
+    <div class="card" id="c-ay"></div>
+  </div>
+
+  <div class="grid two">
+    <!-- Ciro giriş formu -->
+    <div class="card">
+      <h2>Ciro girişi</h2>
+      <div class="f2">
+        <div><label for="tarih">Tarih</label><input type="date" id="tarih"></div>
+        <div><label for="platform">Platform</label>
+          <select id="platform"><option>Trendyol Go</option><option>Yemeksepeti</option></select></div>
+      </div>
+      <label for="brut">Brüt satış (₺)</label>
+      <input type="text" id="brut" inputmode="decimal" placeholder="Örn. 12500,50" autocomplete="off">
+      <div class="preview" id="preview"><span class="lbl">Brüt tutarı girince kesinti dökümü burada görünür.</span></div>
+      <button class="primary" id="kaydet">Kaydet</button>
+    </div>
+
+    <!-- Oran ayarları -->
+    <div class="card rates">
+      <h2>Oran ayarları</h2>
+      <h3><span class="dot ty"></span>Trendyol Go</h3>
+      <div class="f2">
+        <div><label for="ty_kom">Komisyon (%)</label><input type="text" inputmode="decimal" id="ty_kom"></div>
+        <div><label for="ty_kur">Kurye bedeli (%)</label><input type="text" inputmode="decimal" id="ty_kur"></div>
+      </div>
+      <h3><span class="dot ys"></span>Yemeksepeti</h3>
+      <div class="f2">
+        <div><label for="ys_kom">Komisyon (%)</label><input type="text" inputmode="decimal" id="ys_kom"></div>
+        <div><label for="ys_kur">Vale / kurye bedeli (%)</label><input type="text" inputmode="decimal" id="ys_kur"></div>
+      </div>
+      <p class="lbl">Stopaj sabittir: KDV hariç satışın %1'i. Oranlar bu tarayıcıda saklanır; kayıtlar girildiği andaki oranla hesaplanır.</p>
+      <button class="ghost" id="oranKaydet">Oranları kaydet</button>
+      <button class="ghost" id="oranSifirla">Varsayılana dön</button>
+    </div>
+  </div>
+
+  <!-- Son kayıtlar -->
+  <div class="card">
+    <h2>Son kayıtlar</h2>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Tarih</th><th>Platform</th><th>Brüt</th><th>Kesinti</th><th>Net</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ===== AYAR: Supabase bilgilerini buraya yazın (anon/publishable anahtar; service_role ASLA) ===== */
-const ALLOW_SIGNUP=true;  // true yaparsan 'Kayıt ol' butonu geri gelir
-const CFG={url:'https://pifytocnfnowzgigjrrz.supabase.co',key:'sb_publishable_KuLAJDhKoilvgvE7XAlbTQ_nzV_4ubj'};
-/* ================================================================================================= */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
-const TL=k=>(k/100).toLocaleString('tr-TR',{style:'currency',currency:'TRY'});
-const parseTL=v=>{v=String(v).trim();v=v.includes(',')?v.replace(/\./g,'').replace(',','.'):v;const n=Math.round(parseFloat(v)*100);return isFinite(n)?n:NaN};
-const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
-const CATK=['Yeme içme','Market','Ulaşım','Motor ve araç','Giyim','Sağlık','Eğlence','Abonelik','Alışveriş','Diğer'];
-const CATI=['Malzeme','Meyve','Sos','Çikolata','Süsleme','Ambalaj','Personel','Kira','Elektrik','Su','İnternet','Kurye ve teslimat','Platform komisyonu','Vergi','Banka masrafları','Bakım ve ekipman','Pazarlama','Diğer'];
-const GEL=['Waffle satışı','Trendyol Yemek','Yemeksepeti','WhatsApp','Dükkân','Maaş/Diğer gelir'];
-const TYPES={gelir:'Gelir',gider:'Gider',transfer:'Hesaplar arası transfer / kart ödemesi',borc_al:'Borç alma',borc_ode:'Borç ödeme',alacak_ver:'Alacak oluşturma',alacak_tahsil:'Alacak tahsilatı',sermaye:'İşletmeye sermaye aktarma',cekme:'İşletmeden şahsi para çekme'};
-let S,SC='h',V='home',user=null,sb=null,sync='',fid='',timer,CS='i';
-const seed=()=>({u:0,log:[],tx:[],accounts:[
-['Kuveyt Türk — Normal TL','bank','k'],['Kuveyt Türk — Şeker Krizi','bank','i'],['Garanti — Normal TL','bank','k'],['Garanti — POS','bank','i'],['Enpara — TL','bank','k'],
-['Kuveyt Türk Kredi Kartı','card','h',2000000],['Garanti Kredi Kartı','card','h',4000000],['Yusuf — Nakit cüzdan','cash','k'],['Şeker Krizi — Nakit kasa','cash','i']
-].map(a=>({id:uid(),name:a[0],kind:a[1],scope:a[2],limit:a[3]||0,open:0,arch:0,u:Date.now()}))});
-const key=()=>'fm2_'+(user?user.id:'local');
-function load(){try{S=JSON.parse(localStorage.getItem(key()))}catch(e){}if(!S||!S.accounts)S=seed()}
-function save(){S.u=Date.now();localStorage.setItem(key(),JSON.stringify(S));if(sb&&user){sync='⏳ Eşitleniyor…';clearTimeout(timer);timer=setTimeout(push,800)}render()}
-function mergeL(a,b){const m=new Map();[...a,...b].forEach(x=>{const o=m.get(x.id);if(!o||(x.u||0)>(o.u||0))m.set(x.id,x)});return [...m.values()]}
-function merge(a,b){return{u:Math.max(a.u||0,b.u||0),accounts:mergeL(a.accounts||[],b.accounts||[]),tx:mergeL(a.tx||[],b.tx||[]),log:mergeL(a.log||[],b.log||[]),extras:mergeL(a.extras||[],b.extras||[]),debts:mergeL(a.debts||[],b.debts||[]),mv:mergeL(a.mv||[],b.mv||[])}}
-async function pull(){const{data,error}=await sb.from('app_state').select('data').eq('user_id',user.id).maybeSingle();if(error)throw error;if(data&&data.data&&data.data.accounts)S=merge(S,data.data);localStorage.setItem(key(),JSON.stringify(S))}
-async function push(){try{await pull();const{error}=await sb.from('app_state').upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});if(error)throw error;sync='☁️ Eşitlendi';}catch(e){sync='⚠️ Eşitlenemedi (yerel kayıtlı, tekrar denenecek)'}render()}
-addEventListener('online',()=>{if(sb&&user)push()});
-function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
-/* --- hesap motoru: bakiyeler yalnızca işlem kayıtlarından hesaplanır --- */
-const live=()=>S.tx.filter(t=>!t.del);
-function fx(t){const a=t.amt;switch(t.type){case'gelir':case'borc_al':case'alacak_tahsil':return[[t.acc,a]];case'gider':case'borc_ode':case'alacak_ver':return[[t.acc,-a]];case'transfer':case'sermaye':case'cekme':return[[t.acc,-a],[t.to,a]];case'duz':return[[t.acc,t.dir*a]]}return[]}
-function bal(a){let d=0;live().forEach(t=>fx(t).forEach(([i,v])=>{if(i===a.id)d+=v}));return a.kind==='card'?a.open-d:a.open+d} // kartta değer = borç
-const inSc=a=>SC==='h'||a.scope===SC||a.scope==='h';
-const accs=()=>S.accounts.filter(a=>!a.arch);
-function debts(){const m={};live().forEach(t=>{const k=t.type==='borc_al'?['b',1]:t.type==='borc_ode'?['b',-1]:t.type==='alacak_ver'?['a',1]:t.type==='alacak_tahsil'?['a',-1]:null;if(!k)return;const id=k[0]+'|'+(t.person||'—')+'|'+t.scope;m[id]=m[id]||{k:k[0],p:t.person||'—',sc:t.scope,v:0};m[id].v+=k[1]*t.amt});return Object.values(m).filter(x=>x.v!==0&&(SC==='h'||x.sc===SC))}
-function stats(){const ms=today().slice(0,7),T=live().filter(t=>t.date.slice(0,7)===ms);const sum=(f)=>T.filter(f).reduce((s,t)=>s+t.amt,0);
-const cash=accs().filter(a=>a.kind!=='card'&&inSc(a)).reduce((s,a)=>s+bal(a),0),card=accs().filter(a=>a.kind==='card').reduce((s,a)=>s+bal(a),0),D=debts(),bo=D.filter(x=>x.k==='b').reduce((s,x)=>s+x.v,0),al=D.filter(x=>x.k==='a').reduce((s,x)=>s+x.v,0);
-const ig=sum(t=>t.type==='gelir'&&t.scope==='i'),ie=sum(t=>t.type==='gider'&&t.scope==='i');
-return{cash,card,bo,al,net:cash-card-bo+al,kg:sum(t=>t.type==='gider'&&t.scope==='k'),ig,ie,ik:ig-ie}}
-/* --- arayüz --- */
-function render(){
-const nav=[['home','Ana Sayfa'],['debt','Borçlar'],['rep','Rapor'],['tx','İşlemler'],['acc','Hesaplar'],['set','Ayarlar']];
-const accountBox=user?`<div class="accountbar">☁️ ${esc((user.email||'').split('@')[0])} <button class="b o" style="padding:5px 9px;font-size:12px" onclick="sb.auth.signOut()">Çıkış</button></div>`:`<div class="accountbar"><b>Hesabına giriş yap</b><div class="s">İsim ve şifrenle tüm cihazlardan aynı kayıtlara ulaş.</div><input id="em" type="text" placeholder="İsim" autocomplete="username"><input id="pw" type="password" placeholder="Şifre" autocomplete="current-password"><button class="b" onclick="auth(0)">Giriş yap</button> ${ALLOW_SIGNUP?'<button class="b o" onclick="auth(1)">Kayıt ol</button>':''}${sb?'':'<div class="s neg" style="margin-top:6px">Bulut bağlantısı henüz kurulmadı.</div>'}</div>`;
-$('#app').innerHTML=`<header><h1>Yusuf Keder | Finans Merkezi</h1>${accountBox}<div class="tabs">${[['h','Genel'],['k','Kişisel'],['i','Şeker Krizi']].map(x=>`<button class="${SC===x[0]?'on':''}" onclick="SC='${x[0]}';if(SC!=='h')CS=SC;render()">${x[1]}</button>`).join('')}</div></header>
-<main>${sb?'':'<div class="warn">Yerel mod: veriler yalnızca bu cihazın tarayıcısında durur. Telefon ve bilgisayar arasında otomatik geçiş için Supabase URL/anon anahtarını ekleyip veritabanında app_state tablosunu oluşturun.</div>'}${views[V]()}</main>
-<button class="fab" onclick="openTx()">+ İşlem Ekle</button><nav>${nav.map(n=>`<button class="${V===n[0]?'on':''}" onclick="V='${n[0]}';render()">${n[1]}</button>`).join('')}</nav>`}
-const sgn=t=>({gelir:1,borc_al:1,alacak_tahsil:1,gider:-1,borc_ode:-1,alacak_ver:-1}[t.type]||0);
-const txRow=t=>{const A=id=>id?((S.accounts.find(a=>a.id===id)||{}).name||'?'):'—';const s=sgn(t);return`<div class="row"><div><b>${esc(t.cat||TYPES[t.type]||'Düzeltme')}</b> <span class="s">${esc(t.desc||'')}</span><div class="s">${t.date} · ${esc(A(t.acc))}${t.to?' → '+esc(A(t.to)):''}${t.person?' · '+esc(t.person):''} · ${t.scope==='i'?'İşletme':'Kişisel'}</div></div><div style="text-align:right"><div class="${s>0?'pos':s<0?'neg':''}"><b>${s<0?'−':s>0?'+':''}${TL(t.amt)}</b></div>${V==='tx'?`<button class="b d" style="padding:4px 8px;font-size:12px" onclick="del('${t.id}')">Sil</button>`:''}</div></div>`};
-const views={
-home(){const s=stats();const c=(k,v,cl='')=>`<div class="card"><div class="k">${k}</div><div class="v ${cl}">${TL(v)}</div></div>`;
-return`<div class="grid">${c('Nakit + banka',s.cash)}${c('Kredi kartı borcu',s.card,'neg')}${c('Diğer borçlar',s.bo,'neg')}${c('Alacaklar',s.al,'pos')}</div>${c('Net finansal durum (nakit − borçlar + alacaklar)',s.net)}
-<div class="card"><h3>Bu ay — gelir ve gider ayrı</h3>${SC!=='i'?`<div class="row"><span>Kişisel harcama</span><b class="neg">${TL(s.kg)}</b></div>`:''}${SC!=='k'?`<div class="split"><div class="card income"><div class="k">İŞLETME GELİRİ</div><div class="v pos">${TL(s.ig)}</div><button class="b" style="width:100%;margin-top:10px" onclick="openTx('gelir')">+ Gelir ekle</button></div><div class="card expense"><div class="k">İŞLETME GİDERİ</div><div class="v neg">${TL(s.ie)}</div><button class="b d" style="width:100%;margin-top:10px" onclick="openTx('gider')">+ Gider ekle</button></div></div><div class="row"><span>Gelir − gider (TAHMİNİ)</span><b>${TL(s.ik)}</b></div><div class="s">Gelir ve gider ayrı kutulardadır; gider eklerken yanlışlıkla gelir seçilmez. Bu rakam stok/malzeme tüketimi ayrıca işlenmediyse kesin net kâr değildir.</div>`:''}</div>
-<div class="card"><h3>Hesaplar</h3>${accs().filter(inSc).map(accRow).join('')}</div><div class="card"><h3>Son işlemler</h3>${live().filter(t=>SC==='h'||t.scope===SC).sort((a,b)=>b.date.localeCompare(a.date)||b.u-a.u).slice(0,8).map(txRow).join('')||'<div class="s">Henüz işlem yok.</div>'}</div>`},
-tx(){return`<input id="q" placeholder="Ara: açıklama, kategori, kişi, tutar…" oninput="renderList()"><div id="lst"></div>`},
-acc(){return`<div class="card">${accs().filter(inSc).map(a=>accRow(a,1)).join('')}</div><div class="card"><h3>Yeni hesap</h3><label>Ad</label><input id="na"><label>Tür</label><select id="nk"><option value="bank">Banka</option><option value="cash">Nakit</option><option value="card">Kredi kartı</option></select><label>Kullanım</label><select id="ns"><option value="k">Kişisel</option><option value="i">İşletme</option><option value="h">İkisi</option></select><label>Kart limiti (kart ise)</label><input id="nl" inputmode="decimal"><button class="b" onclick="addAcc()">Hesap ekle</button></div>`},
-debt(){const D=debts();const f=k=>D.filter(x=>x.k===k).map(x=>`<div class="row"><span>${esc(x.p)} <span class="s">${x.sc==='i'?'İşletme':'Kişisel'}</span></span><b>${TL(x.v)}</b></div>`).join('')||'<div class="s">Kayıt yok.</div>';return`<div class="card"><h3>Borçlarım (kalan)</h3>${f('b')}</div><div class="card"><h3>Alacaklarım (kalan)</h3>${f('a')}</div><div class="s">Kısmi ödeme için "+ İşlem Ekle" → Borç ödeme / Alacak tahsilatı seçip aynı kişi adını yazın. Ana para ödemesi gider sayılmaz.</div>`},
-set(){return`<div class="card"><h3>Hesap</h3><div class="s">${sb?(user?esc(user.email)+' · '+sync:''):'Yerel mod'}</div>${sb?'<button class="b o" onclick="sb.auth.signOut()">Çıkış</button>':''}</div>
-<div class="card"><h3>Yedekleme</h3><button class="b" onclick="bk()">JSON yedek indir</button> <button class="b o" onclick="csv()">CSV indir</button><br><br><label>JSON yedek yükle</label><input type="file" accept=".json" onchange="rs(this)"></div>`}};
-function accRow(a,ed){const b=bal(a);const c=a.kind==='card';return`<div class="row"><div><b>${esc(a.name)}</b><div class="s">${c?`Limit ${TL(a.limit)} · Kullanılabilir ${TL(a.limit-b)}`:a.kind==='cash'?'Nakit':'Banka'}</div>${ed?`<div style="margin-top:6px"><button class="b o" style="padding:5px 9px;font-size:12px" onclick="opn('${a.id}')">Açılış</button> <button class="b o" style="padding:5px 9px;font-size:12px" onclick="rec('${a.id}')">Mutabakat</button> <button class="b d" style="padding:5px 9px;font-size:12px" onclick="arch('${a.id}')">Arşivle</button></div>`:''}</div><b class="${c?'neg':''}">${c?'Borç ':''}${TL(b)}</b></div>`}
-function renderList(){const q=($('#q').value||'').toLowerCase();$('#lst').innerHTML='<div class="card">'+(live().filter(t=>(SC==='h'||t.scope===SC)&&(!q||[t.desc,t.cat,t.person,t.date,TYPES[t.type],(t.amt/100).toString()].join(' ').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date)||b.u-a.u).map(txRow).join('')||'<div class="s">İşlem yok.</div>')+'</div>'}
+/* ============ 1) AYARLAR ============ */
+const SUPABASE_URL = "https://pifytocnfnowzgigjrrz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_KuLAJDhKoilvgvE7XAlbTQ_nzV_4ubj";
+const TABLO = "platform_cirolari";
+const VARSAYILAN = {
+  "Trendyol Go": { kom: 13.8, kur: 24.6 },
+  "Yemeksepeti": { kom: 15.0, kur: 20.0 }
+};
+const STOPAJ_ORANI = 0.01, KDV_BOLEN = 1.10;
 
-/* ================= AKILLI KOMUT SİSTEMİ (yeni) ================= */
-const norm=s=>String(s||'').trim().toLocaleLowerCase('tr-TR').replace(/\s+/g,' ');
-const slug=s=>norm(s).replace(/[^\p{L}\p{N}]+/gu,'_');
-const cap=s=>s?s.charAt(0).toLocaleUpperCase('tr-TR')+s.slice(1):s;
-const fmtN=k=>(k/100).toLocaleString('tr-TR',{useGrouping:false,maximumFractionDigits:2});
-const pn=v=>{v=String(v).trim();if(v.includes(','))v=v.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(v))v=v.replace(/\./g,'');const n=Math.round(parseFloat(v)*100);return isFinite(n)?n:NaN};
-function ensure(){if(!S)return;S.extras=S.extras||[];S.debts=S.debts||[];S.mv=S.mv||[];if(!S.extras.some(e=>e.id==='ex_nakit'))S.extras.push({id:'ex_nakit',key:'nakit',name:'Nakit',u:0})}
-const paidOf=id=>S.mv.filter(m=>!m.del&&m.kind==='borc'&&m.ref===id).reduce((s,m)=>s+m.sign*m.amt,0);
-const exVal=id=>S.mv.filter(m=>!m.del&&m.kind==='extra'&&m.ref===id).reduce((s,m)=>s+m.sign*m.amt,0);
-function done(msg){const c=$('#cmd');if(c)c.value='';save();toast(msg)}
-function sendCmd(){const i=$('#cmd');if(i)run(i.value)}
-function run(raw){
-ensure();
-let t=String(raw||'').replace(/[−–—]/g,'-').replace(/₺|\btl\b/gi,' ').trim();if(!t)return;let m;
-/* 1) kasa ekle: "kasa ekle pos" */
-if(m=t.match(/^kasa\s+ekle\s+(.+)$/i)){const nm=m[1].trim(),k=norm(nm);if(S.extras.some(e=>norm(e.key)===k))return toast('Bu kasa zaten var.');S.extras.push({id:'ex_'+slug(k),key:k,name:cap(nm),u:Date.now()});return done('Kasa eklendi: '+cap(nm)+'. Kullanım: '+k+' +100')}
-/* 2) borç: "Ahmete borç 1500/+50" */
-const dm=t.match(/(\d[\d.,]*)\s*\/\s*([+-]?)\s*(\d[\d.,]*)/);
-if(dm){const total=pn(dm[1]),part=pn(dm[3]),sg=dm[2]==='-'?-1:1,desc=cap(t.replace(dm[0],' ').replace(/\s+/g,' ').trim());
-if(!desc)return toast('Kişi/açıklama yazın. Örn: Ahmete borç 1500/+50');
-if(!(total>0)||!(part>0))return toast('Tutarlar geçersiz. Örn: Ahmete borç 1500/+50');
-const id='db_'+slug(desc);let d=S.debts.find(x=>x.id===id);
-if(!d){d={id,key:norm(desc),desc,total,sc:CS,u:Date.now()};S.debts.push(d)}else if(d.total!==total||d.del){d.total=total;d.del=0;d.u=Date.now()}
-S.mv.push({id:uid(),u:Date.now(),date:today(),kind:'borc',ref:id,sign:sg,amt:part,desc:d.desc,scope:d.sc});
-return done(d.desc+': '+fmtN(d.total)+'/'+fmtN(paidOf(id)))}
-/* 3) +/- tutar: gelir, gider veya ekstra kasa */
-let sg,am,rest=t,p=t.match(/(?<![\d.,])([+-])\s*(\d[\d.,]*)/);
-if(p){sg=p[1];am=p[2];rest=t.replace(p[0],' ')}else{p=t.match(/(\d[\d.,]*)\s*([+-])(?=\s|$)/);if(p){sg=p[2];am=p[1];rest=t.replace(p[0],' ')}}
-if(!p){const nm=t.match(/\d[\d.,]*/);if(nm){const r=t.replace(nm[0],' ').replace(/\s+/g,' ').trim(),kw=r.match(/(?:^|\s)(gelir|gider)(?=\s|$)/i);
-if(kw){sg=kw[1].toLowerCase()==='gelir'?'+':'-';am=nm[0];rest=r.replace(kw[0],' ');p=1}
-else if(S.extras.some(e=>norm(e.key)===norm(r)||norm(e.name)===norm(r))){sg='+';am=nm[0];rest=r;p=1}}}
-if(!p)return toast('Tutarın yanına + veya − yazın (ör: sos +300), ya da başına gelir/gider yazın.');
-const amt=pn(am);if(!(amt>0))return toast('Geçerli bir tutar yazın.');
-rest=rest.replace(/\s+/g,' ').trim();const k=norm(rest),ex=S.extras.find(e=>norm(e.key)===k||norm(e.name)===k),sign=sg==='+'?1:-1;
-if(ex){S.mv.push({id:uid(),u:Date.now(),date:today(),kind:'extra',ref:ex.id,sign,amt,desc:ex.name});return done(ex.name+': '+TL(exVal(ex.id)))}
-const gelir=sign>0;
-S.tx.push({id:uid(),type:gelir?'gelir':'gider',amt,acc:'',date:today(),desc:'',cat:cap(rest)||(gelir?'Gelir':'Gider'),scope:CS,u:Date.now()});
-return done((gelir?'+':'−')+TL(amt)+' '+(rest||(gelir?'gelir':'gider'))+' işlendi.')}
-function delMv(id){if(!confirm('Bu hareket silinsin mi? (Toplamlar yeniden hesaplanır.)'))return;const m=S.mv.find(x=>x.id===id);if(!m)return;m.del=1;m.u=Date.now();S.log.push({id:uid(),u:Date.now(),at:new Date().toISOString(),act:'sil',mv:JSON.parse(JSON.stringify(m))});save();toast('Hareket silindi.')}
-function delDebt(id){if(!confirm('Bu borç kaydı ve hareketleri silinsin mi?'))return;const d=S.debts.find(x=>x.id===id);if(!d)return;const n=Date.now();d.del=1;d.u=n;S.mv.filter(m=>m.kind==='borc'&&m.ref===id&&!m.del).forEach(m=>{m.del=1;m.u=n});save();toast('Borç kaydı silindi.')}
-let SUG=[];
-function ins(x){const i=$('#cmd');if(!i)return;const a=i.selectionStart??i.value.length,b=i.selectionEnd??a;i.value=i.value.slice(0,a)+x+i.value.slice(b);i.focus();const c=a+x.length;try{i.setSelectionRange(c,c)}catch(e){}}
-function sugg(){const o=[],seen=new Set(),add=(l,t)=>{const k=norm(l);if(seen.has(k)||o.length>=14)return;seen.add(k);o.push({l,t})};
-S.extras.forEach(e=>add(e.name,e.key+' +'));
-S.debts.filter(d=>!d.del).sort((a,b)=>b.u-a.u).forEach(d=>add(d.desc,d.desc+' '+fmtN(d.total)+'/+'));
-live().filter(t=>t.acc===''&&t.cat).sort((a,b)=>b.u-a.u).forEach(t=>add(t.cat,t.cat+' '));
-SUG=o;return o}
-function cmdBox(){const sg=sugg();return`<div class="card"><div class="chips"><button class="${CS==='i'?'on':''}" onclick="CS='i';render()">İşletme</button><button class="${CS==='k'?'on':''}" onclick="CS='k';render()">Kişisel</button></div>
-<input id="cmd" type="text" placeholder="sos +300 · -200 sos · nakit +175 · Ahmete borç 1500/+50" autocomplete="off" autocapitalize="off" enterkeyhint="send" onkeydown="if(event.key==='Enter')sendCmd()">
-<div class="sg"><button onmousedown="event.preventDefault()" onclick="ins('+')">＋</button><button onmousedown="event.preventDefault()" onclick="ins('-')">−</button><button onmousedown="event.preventDefault()" onclick="ins('/')">/</button>${sg.map((x,i)=>`<button onmousedown="event.preventDefault()" onclick="ins(SUG[${i}].t)">${esc(x.l)}</button>`).join('')}</div>
-<button class="b" style="width:100%" onclick="sendCmd()">Gönder</button>
-<details class="s" style="margin-top:10px"><summary>Komut rehberi</summary><div style="line-height:1.7;margin-top:6px">
-<b>Gelir:</b> sos +300 &nbsp;·&nbsp; +300 sos &nbsp;·&nbsp; gelir sos 300<br><b>Gider:</b> sos -200 &nbsp;·&nbsp; -200 sos &nbsp;·&nbsp; gider sos 200<br>
-<b>Nakit / kasa:</b> nakit +175 veya sadece nakit 175 (düşmek için nakit -50)<br><b>Kısayol:</b> kutunun altındaki ＋ − / tuşları ve isim butonları yazıyı sizin yerinize doldurur.<br><b>Yeni kasa türü:</b> kasa ekle pos → sonra: pos +500<br>
-<b>Borç:</b> Ahmete borç 1500/+50 → aynı komutla 1500/+150 yazınca 1500/200 olur (eksi yazarsan düşer)<br>
-Gelir/gider, yukarıda seçili İşletme veya Kişisel alanına işlenir.</div></details></div>`}
-function cmdSummary(){const ms=today().slice(0,7);const T=live().filter(t=>(t.type==='gelir'||t.type==='gider')&&t.date.slice(0,7)===ms&&(SC==='h'||t.scope===SC));
-const g=T.filter(t=>t.type==='gelir').reduce((s,t)=>s+t.amt,0),e=T.filter(t=>t.type==='gider').reduce((s,t)=>s+t.amt,0);
-return`<div class="card"><h3>Anlık özet · bu ay</h3><div class="g3"><div class="mini"><div class="k">Gelir</div><div class="v pos">${TL(g)}</div></div><div class="mini"><div class="k">Gider</div><div class="v neg">${TL(e)}</div></div><div class="mini"><div class="k">Fark</div><div class="v ${g-e<0?'neg':'pos'}">${TL(g-e)}</div></div></div>
-<h3 style="margin-top:14px">Kasalar</h3><div class="g3">${S.extras.map(x=>`<div class="mini"><div class="k">${esc(x.name)}</div><div class="v">${TL(exVal(x.id))}</div></div>`).join('')}</div></div>`}
-function cmdDebts(){const L=S.debts.filter(d=>!d.del&&(SC==='h'||d.sc===SC)).map(d=>({d,p:paidOf(d.id)})).sort((a,b)=>b.d.u-a.d.u);
-return`<div class="card"><h3>Komutla girilen borçlar</h3>${L.map(({d,p})=>{const pc=Math.max(0,Math.min(100,d.total?p/d.total*100:0)),left=d.total-p,hist=S.mv.filter(m=>!m.del&&m.kind==='borc'&&m.ref===d.id).sort((a,b)=>b.u-a.u);
-return`<div class="row" style="align-items:flex-start"><div style="flex:1"><b>${esc(d.desc)}</b> <span class="s">${d.sc==='i'?'İşletme':'Kişisel'}</span><div class="bar"><i style="width:${pc}%"></i></div><div class="s">${left>0?'Kalan '+TL(left):'✔ Tamamlandı'+(left<0?' (fazla '+TL(-left)+')':'')}</div><details class="s"><summary>Hareketler (${hist.length})</summary>${hist.map(m=>`<div>${m.date} · ${m.sign>0?'+':'−'}${fmtN(m.amt)}</div>`).join('')}</details></div><div style="text-align:right"><div class="v">${fmtN(d.total)}/${fmtN(p)}</div><button class="b d" style="padding:4px 8px;font-size:12px;margin-top:6px" onclick="delDebt('${d.id}')">Sil</button></div></div>`}).join('')||'<div class="s">Henüz komutla girilmiş borç yok. Örn: Ahmete borç 1500/+50</div>'}</div>`}
-function repItems(){const L=[];
-live().forEach(t=>{const s=sgn(t);if(!s)return;if(SC!=='h'&&t.scope!==SC)return;L.push({u:t.u||0,s,amt:t.amt,title:t.cat||TYPES[t.type],sub:t.desc||'',date:t.date,tag:TYPES[t.type],del:`del('${t.id}')`})});
-S.mv.filter(m=>!m.del).forEach(m=>{let tag='Kasa',sub='';if(m.kind==='borc'){tag='Borç';const d=S.debts.find(x=>x.id===m.ref);if(d)sub='Güncel: '+fmtN(d.total)+'/'+fmtN(paidOf(d.id))}else{const x=S.extras.find(e=>e.id===m.ref);if(x)sub='Kasa toplamı: '+TL(exVal(x.id))}
-L.push({u:m.u||0,s:m.sign,amt:m.amt,title:m.desc||'Hareket',sub,date:m.date,tag,del:`delMv('${m.id}')`})});
-return L.sort((a,b)=>b.u-a.u).slice(0,60)}
-views.rep=function(){const L=repItems();return`<div class="card"><h3>Son raporlama</h3><div class="s" style="margin-bottom:6px">En son girilen 60 hareket, yeniden eskiye.</div>${L.map(i=>`<div class="row"><div><b>${esc(i.title)}</b><div class="s"><span class="tag">${esc(i.tag)}</span>${i.date}${i.sub?' · '+esc(i.sub):''}</div></div><div style="text-align:right"><div class="${i.s>0?'pos':'neg'}"><b>${i.s>0?'+':'−'}${TL(i.amt)}</b></div><button class="b d" style="padding:4px 8px;font-size:12px" onclick="${i.del}">Sil</button></div></div>`).join('')||'<div class="s">Henüz hareket yok.</div>'}</div>`};
-const _home=views.home,_debt=views.debt;
-views.home=()=>cmdBox()+cmdSummary()+_home();
-views.debt=()=>cmdDebts()+_debt();
-/* render sarmalayıcı: yazılan komut eşitleme/yenilemede silinmesin */
-const _r=render;render=function(){ensure();const c=$('#cmd'),cv=c?c.value:'',f=!!c&&document.activeElement===c;_r();if(V==='tx'&&$('#q'))renderList();const n=$('#cmd');if(n&&c){n.value=cv;if(f)n.focus()}};
+/* ============ 2) YARDIMCILAR ============ */
+const $ = id => document.getElementById(id);
+const para = n => (Number(n) || 0).toLocaleString("tr-TR", { style: "currency", currency: "TRY" });
+const yuvarla = n => Math.round((n + Number.EPSILON) * 100) / 100;
+// "12.500,50" veya "12500,50" veya "12500.50" -> 12500.5
+function sayi(s) {
+  s = String(s || "").trim().replace(/\s/g, "");
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function bugun() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function tarihStr(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+let msgTimer;
+function mesaj(tip, metin, kalici) {
+  const m = $("msg");
+  m.className = tip; m.textContent = metin;
+  clearTimeout(msgTimer);
+  if (!kalici) msgTimer = setTimeout(() => { m.className = ""; }, 6000);
+}
 
-/* --- işlem formu --- */
-function openTx(preset){fid=uid();const o=a=>accs().map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
-const m=document.createElement('div');m.className='mod';m.id='mod';m.innerHTML=`<div class="sheet"><h3>İşlem ekle</h3>
-<label>İşlem türü</label><select id="f_t" onchange="fm()">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${preset===k?'selected':''}>${v}</option>`).join('')}</select>
-<label>Tutar (TL)</label><input id="f_a" inputmode="decimal" placeholder="0,00">
-<label id="l_acc">Hesap</label><select id="f_c">${o()}</select>
-<div id="g_to"><label>Hedef hesap</label><select id="f_to">${o()}</select></div>
-<div id="g_p"><label>Kişi / firma</label><input id="f_p"></div>
-<div id="g_cat"><label>Kategori</label><select id="f_cat"></select></div>
-<div id="g_sc"><label>Kişisel / işletme</label><select id="f_sc"><option value="k">Kişisel</option><option value="i">İşletme</option></select></div>
-<label>Tarih</label><input id="f_d" type="date" value="${today()}"><label>Açıklama (isteğe bağlı)</label><input id="f_ds">
-<button class="b" id="f_ok" onclick="addTx()">Kaydet</button> <button class="b o" onclick="$('#mod').remove()">Vazgeç</button></div>`;document.body.appendChild(m);$('#f_sc').value=SC==='i'?'i':'k';fm()}
-function fm(){const t=$('#f_t').value,tr=['transfer','sermaye','cekme'].includes(t),db=t.startsWith('borc')||t.startsWith('alacak');
-$('#g_to').style.display=tr?'':'none';$('#g_p').style.display=db?'':'none';$('#g_cat').style.display=(t==='gelir'||t==='gider')?'':'none';$('#g_sc').style.display=(tr&&t!=='transfer')?'none':'';
-$('#l_acc').textContent=tr?'Kaynak hesap':'Hesap';fc()}
-function fc(){const t=$('#f_t').value,sc=$('#f_sc').value;$('#f_cat').innerHTML=(t==='gelir'?GEL:sc==='i'?CATI:CATK).map(c=>`<option>${c}</option>`).join('')}
-document.addEventListener('change',e=>{if(e.target.id==='f_sc')fc()});
-function addTx(){const t=$('#f_t').value,amt=parseTL($('#f_a').value);if(!(amt>0))return toast('Geçerli bir tutar girin.');
-const x={id:fid,type:t,amt,acc:$('#f_c').value,date:$('#f_d').value||today(),desc:$('#f_ds').value.trim(),scope:$('#f_sc').value,u:Date.now()};
-if(['transfer','sermaye','cekme'].includes(t)){x.to=$('#f_to').value;if(x.to===x.acc)return toast('Kaynak ve hedef hesap farklı olmalı.');if(t==='sermaye')x.scope='i';if(t==='cekme')x.scope='i'}
-if(t==='gelir'||t==='gider')x.cat=$('#f_cat').value;if($('#g_p').style.display!=='none'){x.person=$('#f_p').value.trim();if(!x.person)return toast('Kişi / firma adı girin.')}
-if(S.tx.some(y=>y.id===x.id))return;$('#f_ok').disabled=true;S.tx.push(x);save();$('#mod').remove();toast('İşlem kaydedildi.')}
-function del(id){if(!confirm('Bu işlem silinsin mi? (Kayıt geçmişte saklanır, bakiye yeniden hesaplanır.)'))return;const t=S.tx.find(x=>x.id===id);t.del=1;t.u=Date.now();S.log.push({id:uid(),u:Date.now(),at:new Date().toISOString(),act:'sil',tx:JSON.parse(JSON.stringify(t))});save();toast('İşlem silindi.')}
-function addAcc(){const n=$('#na').value.trim();if(!n)return toast('Hesap adı girin.');S.accounts.push({id:uid(),name:n,kind:$('#nk').value,scope:$('#ns').value,limit:Math.max(0,parseTL($('#nl').value)||0),open:0,arch:0,u:Date.now()});save();toast('Hesap eklendi.')}
-function opn(id){const a=S.accounts.find(x=>x.id===id),v=prompt(a.kind==='card'?'Açılış kart borcu (TL):':'Açılış bakiyesi (TL):',(a.open/100).toString().replace('.',','));if(v===null)return;const n=parseTL(v);if(isNaN(n))return toast('Geçersiz tutar.');a.open=n;a.u=Date.now();save()}
-function arch(id){if(!confirm('Hesap arşivlensin mi? (İşlem geçmişi korunur)'))return;const a=S.accounts.find(x=>x.id===id);a.arch=1;a.u=Date.now();save()}
-function rec(id){const a=S.accounts.find(x=>x.id===id),v=prompt('Bankadaki gerçek '+(a.kind==='card'?'borç':'bakiye')+' (TL):');if(v===null)return;const n=parseTL(v);if(isNaN(n))return toast('Geçersiz tutar.');const d=n-bal(a);if(!d)return toast('Fark yok, bakiye tutuyor.');
-if(!confirm('Fark: '+TL(d)+'. Önce eksik işlem arayın. Yine de açıklamalı düzeltme kaydı oluşturulsun mu?'))return;
-const dir=a.kind==='card'?(d>0?-1:1):(d>0?1:-1);S.tx.push({id:uid(),type:'duz',amt:Math.abs(d),dir,acc:id,date:today(),desc:'Mutabakat düzeltmesi',scope:'k',u:Date.now()});save()}
-function dl(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}
-const bk=()=>dl('finans-yedek-'+today()+'.json',JSON.stringify(S),'application/json');
-function csv(){const A=id=>(S.accounts.find(a=>a.id===id)||{}).name||'';const r=[['Tarih','Tür','Tutar','Hesap','Hedef','Kategori','Kişi','Alan','Açıklama']].concat(live().map(t=>[t.date,TYPES[t.type]||'Düzeltme',(t.amt/100).toFixed(2),A(t.acc),A(t.to),t.cat||'',t.person||'',t.scope,t.desc||'']));dl('islemler-'+today()+'.csv','\ufeff'+r.map(x=>x.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n'),'text/csv')}
-function rs(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.accounts)||!Array.isArray(d.tx)||d.tx.some(t=>!t.id||!(t.amt>0)||!t.date||!t.type))throw 0;if(!confirm('Yedek mevcut verilerle BİRLEŞTİRİLECEK (aynı kayıtlarda en yeni olan kalır). Devam edilsin mi?'))return;S=merge(S,{...d,log:d.log||[]});save();toast('Yedek yüklendi.')}catch(e){toast('Geçersiz yedek dosyası.')}};r.readAsText(f)}
-const internalEmail=name=>name.trim().toLowerCase().replace(/\s+/g,'')+'@finansmerkezi.local';
-async function auth(up){if(!sb)return toast('Supabase bağlantısı kurulmalı.');const name=$('#em').value.trim(),p=$('#pw').value;if(!/^[a-zA-Z0-9_ğüşöçıİĞÜŞÖÇ.-]{3,30}$/.test(name)||p.length<6)return toast('İsim en az 3 karakter, şifre en az 6 karakter olmalı.');const e=internalEmail(name);let result=up?await sb.auth.signUp({email:e,password:p}):await sb.auth.signInWithPassword({email:e,password:p});if(result.error)return toast(result.error.message);if(up){if(!result.data.session){result=await sb.auth.signInWithPassword({email:e,password:p});if(result.error)return toast('Kayıt oluştu. Supabase panelinde Confirm email seçeneğini kapatıp tekrar giriş yap.')}toast('Kayıt oluşturuldu ve giriş yapıldı.');}else toast('Giriş başarılı.')}
-async function start(){
-if(CFG.url&&CFG.key&&window.supabase){sb=supabase.createClient(CFG.url,CFG.key);
-const{data}=await sb.auth.getSession();user=data.session?data.session.user:null;
-sb.auth.onAuthStateChange(async(_,s)=>{const nu=s?s.user:null;if((nu&&nu.id)===(user&&user.id))return;user=nu;if(user){load();try{await pull();sync='☁️ Eşitlendi';await push()}catch(e){sync='⚠️ Bağlantı yok (yerel veriler)'}}render()})}
-load();render();if(sb&&user){try{await pull();sync='☁️ Eşitlendi';render()}catch(e){sync='⚠️ Bağlantı yok (yerel veriler)'}}}
-start();
-</script></body></html>
+/* ============ 3) ORANLAR (localStorage) ============ */
+function oranlariYukle() {
+  try {
+    const k = JSON.parse(localStorage.getItem("oranlar"));
+    if (k && k["Trendyol Go"] && k["Yemeksepeti"]) return k;
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(VARSAYILAN));
+}
+let oranlar = oranlariYukle();
+function oranlariFormaYaz() {
+  const f = n => String(n).replace(".", ",");
+  $("ty_kom").value = f(oranlar["Trendyol Go"].kom);
+  $("ty_kur").value = f(oranlar["Trendyol Go"].kur);
+  $("ys_kom").value = f(oranlar["Yemeksepeti"].kom);
+  $("ys_kur").value = f(oranlar["Yemeksepeti"].kur);
+}
+$("oranKaydet").onclick = () => {
+  const yeni = {
+    "Trendyol Go": { kom: sayi($("ty_kom").value), kur: sayi($("ty_kur").value) },
+    "Yemeksepeti": { kom: sayi($("ys_kom").value), kur: sayi($("ys_kur").value) }
+  };
+  for (const p in yeni) for (const k in yeni[p]) {
+    if (yeni[p][k] < 0 || yeni[p][k] > 100) return mesaj("err", "Oranlar 0 ile 100 arasında olmalı.");
+  }
+  oranlar = yeni;
+  try { localStorage.setItem("oranlar", JSON.stringify(oranlar)); mesaj("ok", "Oranlar kaydedildi."); }
+  catch (e) { mesaj("err", "Oranlar bu tarayıcıda saklanamadı: " + e.message); }
+  onizle();
+};
+$("oranSifirla").onclick = () => {
+  oranlar = JSON.parse(JSON.stringify(VARSAYILAN));
+  try { localStorage.setItem("oranlar", JSON.stringify(oranlar)); } catch (e) {}
+  oranlariFormaYaz(); onizle(); mesaj("ok", "Oranlar varsayılana döndü.");
+};
+
+/* ============ 4) HESAPLAMA ============ */
+function hesapla(platform, brut) {
+  const o = oranlar[platform];
+  const komisyon = brut * (o.kom / 100);
+  const kurye = brut * (o.kur / 100);
+  const stopaj = (brut / KDV_BOLEN) * STOPAJ_ORANI;
+  const net = brut - (komisyon + kurye + stopaj);
+  return {
+    brut: yuvarla(brut), komisyon: yuvarla(komisyon), kurye: yuvarla(kurye),
+    stopaj: yuvarla(stopaj), net: yuvarla(net)
+  };
+}
+function onizle() {
+  const brut = sayi($("brut").value), p = $("platform").value;
+  if (brut <= 0) { $("preview").innerHTML = '<span class="lbl">Brüt tutarı girince kesinti dökümü burada görünür.</span>'; return; }
+  const h = hesapla(p, brut), o = oranlar[p];
+  const satir = (a, b, c) => `<div class="row"><span class="lbl">${a}</span><span>${c ? "−" : ""}${para(b)}</span></div>`;
+  $("preview").innerHTML =
+    satir("Brüt satış", h.brut, false) +
+    satir(`Komisyon (%${String(o.kom).replace(".", ",")})`, h.komisyon, true) +
+    satir(`Kurye (%${String(o.kur).replace(".", ",")})`, h.kurye, true) +
+    satir("Stopaj (%1, KDV hariç)", h.stopaj, true) +
+    `<div class="net"><span>Tahmini net kazanç</span><span>${para(h.net)}</span></div>`;
+}
+$("brut").addEventListener("input", onizle);
+$("platform").addEventListener("change", onizle);
+
+/* ============ 5) VERİTABANI (SDK, olmazsa REST) ============ */
+const REST = SUPABASE_URL + "/rest/v1/" + TABLO;
+const HDR = { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "Content-Type": "application/json" };
+let sdk = null;
+try { if (window.supabase) sdk = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { sdk = null; }
+
+async function restHata(r) {
+  let detay = "";
+  try { const j = await r.json(); detay = j.message || j.hint || JSON.stringify(j); } catch (e) {}
+  return new Error(`HTTP ${r.status}${detay ? " – " + detay : ""}`);
+}
+const DB = {
+  async listele() {
+    if (sdk) {
+      try {
+        const { data, error } = await sdk.from(TABLO).select("*").order("tarih", { ascending: false }).order("id", { ascending: false }).limit(1000);
+        if (error) throw error;
+        return data;
+      } catch (e) { console.warn("SDK hata, REST'e geçiliyor:", e); }
+    }
+    const r = await fetch(REST + "?select=*&order=tarih.desc,id.desc&limit=1000", { headers: HDR });
+    if (!r.ok) throw await restHata(r);
+    return r.json();
+  },
+  async ekle(kayit) {
+    if (sdk) {
+      try {
+        const { error } = await sdk.from(TABLO).insert(kayit);
+        if (error) throw error;
+        return;
+      } catch (e) { console.warn("SDK hata, REST'e geçiliyor:", e); }
+    }
+    const r = await fetch(REST, { method: "POST", headers: { ...HDR, Prefer: "return=minimal" }, body: JSON.stringify(kayit) });
+    if (!r.ok) throw await restHata(r);
+  },
+  async sil(id) {
+    if (sdk) {
+      try {
+        const { error } = await sdk.from(TABLO).delete().eq("id", id);
+        if (error) throw error;
+        return;
+      } catch (e) { console.warn("SDK hata, REST'e geçiliyor:", e); }
+    }
+    const r = await fetch(REST + "?id=eq." + encodeURIComponent(id), { method: "DELETE", headers: HDR });
+    if (!r.ok) throw await restHata(r);
+  }
+};
+
+/* ============ 6) ÖZET KARTLARI + TABLO ============ */
+let kayitlar = [];
+function topla(liste) {
+  const t = { brut: 0, net: 0, p: { "Trendyol Go": { brut: 0, net: 0 }, "Yemeksepeti": { brut: 0, net: 0 } } };
+  liste.forEach(k => {
+    const b = Number(k.brut_tutar) || 0, n = Number(k.net_kazanc) || 0;
+    t.brut += b; t.net += n;
+    if (t.p[k.platform]) { t.p[k.platform].brut += b; t.p[k.platform].net += n; }
+  });
+  return t;
+}
+function kartYaz(id, baslik, liste) {
+  const t = topla(liste);
+  const pr = (ad, cls) => `<div class="row"><span><span class="dot ${cls}"></span>${ad}</span><span>${para(t.p[ad].net)} <span class="lbl">/ ${para(t.p[ad].brut)}</span></span></div>`;
+  $(id).innerHTML =
+    `<div class="period">${baslik}</div>
+     <div class="lbl">Net kazanç</div><div class="big">${para(t.net)}</div>
+     <div class="brut"><span class="lbl">Brüt satış</span> <b>${para(t.brut)}</b></div>
+     <div class="lbl" style="margin-bottom:4px">Platform (net / brüt)</div>
+     ${pr("Trendyol Go", "ty")}${pr("Yemeksepeti", "ys")}`;
+}
+function ozetleriYaz() {
+  const bg = bugun();
+  const d7 = new Date(); d7.setDate(d7.getDate() - 6);
+  const haftaBas = tarihStr(d7);
+  const ay = bg.slice(0, 7);
+  kartYaz("c-gun", "Bugün", kayitlar.filter(k => k.tarih === bg));
+  kartYaz("c-hafta", "Son 7 gün", kayitlar.filter(k => k.tarih >= haftaBas && k.tarih <= bg));
+  kartYaz("c-ay", "Bu ay", kayitlar.filter(k => String(k.tarih).slice(0, 7) === ay));
+}
+function tabloYaz() {
+  const tb = $("tbody");
+  if (!kayitlar.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">Henüz kayıt yok. Soldaki formdan ilk cironuzu ekleyin.</td></tr>'; return; }
+  tb.innerHTML = kayitlar.slice(0, 50).map(k => {
+    const kes = (Number(k.komisyon_kesinti) || 0) + (Number(k.kurye_kesinti) || 0) + (Number(k.stopaj_kesinti) || 0);
+    const [y, m, g] = String(k.tarih).split("-");
+    const cls = k.platform === "Trendyol Go" ? "ty" : "ys";
+    return `<tr>
+      <td>${g}.${m}.${y}</td>
+      <td><span class="dot ${cls}"></span>${k.platform}</td>
+      <td>${para(k.brut_tutar)}</td>
+      <td class="ded">−${para(kes)}</td>
+      <td class="net">${para(k.net_kazanc)}</td>
+      <td><button class="del" data-id="${k.id}">Sil</button></td></tr>`;
+  }).join("");
+}
+async function yenile(sessiz) {
+  try {
+    kayitlar = await DB.listele();
+    ozetleriYaz(); tabloYaz();
+    if (!sessiz) mesaj("ok", `${kayitlar.length} kayıt yüklendi.`);
+  } catch (e) {
+    mesaj("err", "Kayıtlar okunamadı: " + e.message + ". İnternet bağlantınızı ve Supabase tablo/RLS ayarlarını kontrol edin.", true);
+  }
+}
+
+/* ============ 7) KAYDET / SİL ============ */
+$("kaydet").onclick = async () => {
+  const brut = sayi($("brut").value), tarih = $("tarih").value, platform = $("platform").value;
+  if (!tarih) return mesaj("err", "Lütfen bir tarih seçin.");
+  if (brut <= 0) return mesaj("err", "Brüt satış tutarı sıfırdan büyük olmalı.");
+  const h = hesapla(platform, brut);
+  const btn = $("kaydet"); btn.disabled = true; btn.textContent = "Kaydediliyor…";
+  try {
+    await DB.ekle({
+      tarih, platform, brut_tutar: h.brut, komisyon_kesinti: h.komisyon,
+      kurye_kesinti: h.kurye, stopaj_kesinti: h.stopaj, net_kazanc: h.net
+    });
+    $("brut").value = ""; onizle();
+    await yenile(true);
+    mesaj("ok", `Kaydedildi: ${platform}, brüt ${para(h.brut)}, net ${para(h.net)}.`);
+  } catch (e) {
+    mesaj("err", "Kayıt eklenemedi: " + e.message, true);
+  } finally { btn.disabled = false; btn.textContent = "Kaydet"; }
+};
+$("tbody").addEventListener("click", async e => {
+  const b = e.target.closest(".del"); if (!b) return;
+  if (!confirm("Bu kayıt silinsin mi?")) return;
+  b.disabled = true;
+  try { await DB.sil(b.dataset.id); await yenile(true); mesaj("ok", "Kayıt silindi."); }
+  catch (err) { b.disabled = false; mesaj("err", "Kayıt silinemedi: " + err.message, true); }
+});
+
+/* ============ 8) BAŞLAT ============ */
+$("tarih").value = bugun();
+oranlariFormaYaz();
+yenile();
+</script>
+</body>
+</html>
